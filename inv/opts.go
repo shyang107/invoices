@@ -11,30 +11,30 @@ import (
 )
 
 var (
-	// Opts is options for this application
-	Opts Options
+	// Opt is option for this application
+	Opt Option
 )
 
-// Options setup the application
-type Options struct {
+// Option setup the application
+type Option struct {
 	// [input]
-	InpFn       string
-	IfnSuffix   string
-	IsNative    bool
-	IfnEncoding string
+	InpFn       string `json:"input_filename"`
+	IfnSuffix   string `json:"input_filename_extention"`
+	IsNative    bool   `json:"is_native"`
+	IfnEncoding string `json:"encoding_name_of_text"`
 	// [output]
-	OutFn     string
-	OfnSuffix string
-	IsOutput  bool
+	OutFn     string `json:"output_filename"`
+	OfnSuffix string `json:"output_filename_extention"`
+	IsOutput  bool   `json:"is_output"`
 	// [punch]
-	PunchFn string
+	PunchFn string `json:"punch_filename"`
 }
 
-func (o Options) String() string {
-	strdashk := strings.Repeat("-", 12)
-	strdashv := strings.Repeat("-", 15)
+func (o Option) String() string {
+	strdashk := strings.Repeat("-", 15)
+	strdashv := strings.Repeat("-", 30)
 	tab := ArgsTable(
-		"Options",
+		"Option",
 		"Input:", strdashk, strdashv,
 		"input file name", "InpFn", o.InpFn,
 		"input file type", "IfnSuffix", o.IfnSuffix,
@@ -50,8 +50,8 @@ func (o Options) String() string {
 	return tab
 }
 
-// DefaultOptions sets a list of safe recommended options. Feel free to modify these to suit your needs.
-var DefaultOptions = Options{
+// DefaultOption sets a list of safe recommended option. Feel free to modify these to suit your needs.
+var DefaultOption = Option{
 	InpFn:       "./data/inp/09751085061.csv",
 	IfnSuffix:   ".csv",
 	IsNative:    true,
@@ -61,7 +61,7 @@ var DefaultOptions = Options{
 	PunchFn:     "./data/out/punch.out",
 }
 
-// GetOptions gets the configuration from cfgFN
+// GetOption gets the configuration from cfgFN
 // // [input]
 // // inputFile   = ./09751085061.csv
 // // is_native   = false
@@ -71,7 +71,7 @@ var DefaultOptions = Options{
 // // is_output   = true
 // // [punch]
 // // punchFileName = ./punch.out
-func (o *Options) GetOptions() {
+func (o *Option) GetOption() {
 	startfunc(fostart)
 	cfn := Cfg.CaseFn
 	if !isOpened(cfn) {
@@ -94,4 +94,11 @@ func (o *Options) GetOptions() {
 	plog("%s", *o)
 	stopfunc(fostop) //, "GetFromConfig")
 	// os.Exit(1)
+}
+
+// NewOption return an new Option
+func NewOption() *Option {
+	var o Option
+	o = DefaultOption
+	return &o
 }

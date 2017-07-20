@@ -44,7 +44,7 @@ var (
 
 func init() {
 	Cfg = DefaultConfig
-	Opts = DefaultOptions
+	Opt = DefaultOption
 	io.Verbose = Cfg.Verbose
 	chk.Verbose = Cfg.Verbose
 }
@@ -83,7 +83,6 @@ func ConfigCmds(version string) {
 }
 
 func confRun(c *cli.Context) error {
-
 	if c.Bool("initial") {
 		Cfg.IsInitializing = c.Bool("initial")
 	}

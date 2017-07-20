@@ -66,7 +66,7 @@ func (CsvMarshaller) UnmarshalInvoices(fn string) ([]*Invoice, error) {
 	var pdets []*Detail
 	err = io.ReadLinesFile(f, func(idx int, line string) (stop bool) {
 		// plog("line = %v\n", line)
-		if Opts.IsNative {
+		if Opt.IsNative {
 			line = big5ToUtf8(line)
 		} else {
 			switch idx {
@@ -155,7 +155,7 @@ func parseCSVInvoice(recs []string) *Invoice {
 }
 
 func big5ToUtf8(str string) string {
-	res, err := iconv.ConvertString(str, Opts.IfnEncoding, "utf-8")
+	res, err := iconv.ConvertString(str, Opt.IfnEncoding, "utf-8")
 	checkErr(err)
 	return res
 }

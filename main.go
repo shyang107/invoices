@@ -7,10 +7,10 @@ import (
 	"regexp"
 	"time"
 
+	"./inv"
 	"github.com/cpmech/gosl/io"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/shyang107/invoices/inv"
 )
 
 // Version :
@@ -45,16 +45,6 @@ func main() {
 	// pfields()
 	duration := time.Since(start) //.Seconds()
 	fmt.Fprintf(os.Stdout, "run-time elapsed : %v\n", duration)
-	//
-	// test := "【企鵝寶寶】ARC-956A變頻冷氣萬用遙控器"
-	// io.Pfgreen2("%q : %d\n", test, utf8.RuneCountInString(test))
-	// nc, ne, n := inv.CountChars(test)
-	// io.Pfgreen2("nc,ne,n = %d, %d, %d\n", nc, ne, n)
-	// test = "Ｃｌｉｐｐｅｒ火石打"
-	// io.Pfgreen2("%q : %d\n", test, utf8.RuneCountInString(test))
-	// nc, ne, n = inv.CountChars(test)
-	// io.Pfgreen2("nc,ne,n = %d, %d, %d\n", nc, ne, n)
-	//
 }
 
 func initDb() {
