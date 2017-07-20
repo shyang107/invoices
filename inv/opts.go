@@ -61,7 +61,7 @@ var DefaultOption = Option{
 	PunchFn:     "./data/out/punch.out",
 }
 
-// GetOption gets the configuration from cfgFN
+// GetOptions gets the configuration from cfgFN
 // // [input]
 // // inputFile   = ./09751085061.csv
 // // is_native   = false
@@ -71,7 +71,7 @@ var DefaultOption = Option{
 // // is_output   = true
 // // [punch]
 // // punchFileName = ./punch.out
-func (o *Option) GetOption() {
+func (o *Option) GetOptions() {
 	startfunc(fostart)
 	cfn := Cfg.CaseFn
 	if !isOpened(cfn) {

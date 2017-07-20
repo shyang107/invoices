@@ -37,4 +37,5 @@ func main() {
 	for i, o := range opts {
 		io.Pfgreen2("Option %d:\n%v\n", i+1, o)
 	}
+
 }

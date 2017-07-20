@@ -69,23 +69,21 @@ type Invoice struct {
 }
 
 func (pv Invoice) String() string {
-	tab := ""
+	var b bytes.Buffer
+	ff := fmt.Fprintf
 	ds := reflect.ValueOf(pv)
 	t := ds.Type()
 	nh := t.NumField()
 	for i := 0; i < nh; i++ {
 		field := t.Field(i)
-		typename := field.Type.String()
-		if typename == "gorm.Model" || typename == "[]*inv.Detail" {
-			continue
-		}
-		h := field.Tag.Get("cht")
 		val := ds.Field(i).Interface()
 		var v string
-		switch typename {
-		case "time.Time":
+		switch val.(type) {
+		case gorm.Model, []*Detail:
+			continue
+		case time.Time:
 			v = io.Sf("%v", val.(time.Time).Format(strDateFormat))
-		case "float64":
+		case float64:
 			v = io.Sf("%.1f", val.(float64))
 		default:
 			if field.Name == "UINumber" {
@@ -94,15 +92,15 @@ func (pv Invoice) String() string {
 			}
 			v = val.(string)
 		}
-		tab += io.Sf(" %s : %s |", h, v)
+		h := field.Tag.Get("cht")
+		ff(&b, " %s : %s |", h, v)
 	}
-	tab += "\n"
+	ff(&b, "\n")
+	lspaces := io.StrSpaces(4)
 	for i, d := range pv.Details {
-		tab += io.StrSpaces(4)
-		tab += io.Sf("> %2d. ", i+1)
-		tab += io.Sf("%s", d)
+		ff(&b, "%s> %2d. %s", lspaces, i+1, d)
 	}
-	return tab
+	return b.String()
 	// re, _ := regexp.Compile("^[\u4e00-\u9fa5]")
 }
 
@@ -294,33 +292,32 @@ type Detail struct {
 }
 
 func (d Detail) String() string {
-	tab := ""
+	var b bytes.Buffer
+	bws := b.WriteString
 	ds := reflect.ValueOf(d)
 	t := ds.Type()
 	nh := t.NumField()
 	for i := 0; i < nh; i++ {
-		tfield := t.Field(i)
-		typename := tfield.Type.String()
-		if typename == "gorm.Model" {
-			continue
-		}
-		h := tfield.Tag.Get("cht")
+		fld := t.Field(i)
 		val := ds.Field(i).Interface()
 		var v string
-		switch typename {
-		case "float64":
+		switch val.(type) {
+		case gorm.Model:
+			continue
+		case float64:
 			v = io.Sf("%.1f", val.(float64))
 		default:
-			if tfield.Name == "UINumber" {
+			if fld.Name == "UINumber" {
 				v = val.(string)[0:2] + "-" + val.(string)[2:]
 				break
 			}
 			v = val.(string)
 		}
-		tab += io.Sf(" %s : %s |", h, v)
+		h := fld.Tag.Get("cht")
+		bws(io.Sf(" %s : %s |", h, v))
 	}
-	tab += "\n"
-	return tab
+	bws("\n")
+	return b.String()
 }
 
 // GetArgsTable :

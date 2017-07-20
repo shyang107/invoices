@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"./inv"
+
 	"github.com/cpmech/gosl/io"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
@@ -29,7 +30,7 @@ func main() {
 	//
 	inv.ConfigCmds(Version)
 	//
-	inv.Opts.GetOptions()
+	inv.Opt.GetOptions()
 	//
 	if inv.Cfg.IsInitializing {
 		inv.InitDB()
@@ -38,7 +39,7 @@ func main() {
 	//
 	pvs, err := inv.ReadInvoices()
 	checkErr(err)
-	if inv.Opts.IsOutput {
+	if inv.Opt.IsOutput {
 		err = inv.WriteInvoices(pvs)
 		checkErr(err)
 	}

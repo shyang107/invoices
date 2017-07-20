@@ -1,0 +1,26 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	0	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Invoice	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^type Invoice struct {$/;"	type	line:50
+String	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (pv Invoice) String() string {$/;"	func	line:71
+v	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^		var v string$/;"	var	line:79
+TableName	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (Invoice) TableName() string {$/;"	func	line:108
+GetArgsTable	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (pv *Invoice) GetArgsTable(args ...string) string {$/;"	func	line:114
+title	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var title string$/;"	var	line:115
+invoiceSlcie	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^type invoiceSlcie struct {$/;"	type	line:137
+detailSlcie	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^type detailSlcie struct {$/;"	type	line:141
+getInvoicesTable	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func getInvoicesTable(pinvs []*Invoice) string {$/;"	func	line:145
+b	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var b bytes.Buffer$/;"	var	line:206
+Detail	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^type Detail struct {$/;"	type	line:281
+String	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (d Detail) String() string {$/;"	func	line:294
+v	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^		var v string$/;"	var	line:302
+GetArgsTable	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (d *Detail) GetArgsTable(args ...string) string {$/;"	func	line:323
+title	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var title string$/;"	var	line:324
+TableName	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (Detail) TableName() string {$/;"	func	line:341
+getDetailsTable	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func getDetailsTable(pds []*Detail) string {$/;"	func	line:347
+b	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var b bytes.Buffer$/;"	var	line:380
+printInvList	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func printInvList(pvs []*Invoice) {$/;"	func	line:414
+b	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var b bytes.Buffer$/;"	var	line:415

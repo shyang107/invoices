@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cpmech/gosl/chk"
+	"github.com/jinzhu/gorm"
 	"github.com/stanim/xlsxtra"
 	// "github.com/stanim/xlsxtra"
 	"github.com/tealeg/xlsx"
@@ -131,22 +132,18 @@ func (d *Detail) addTo(r *xlsxtra.Row, id int) {
 	cell.SetInt(id)
 	//
 	val := reflect.ValueOf(*d)
-	typ := val.Type()
-	n := typ.NumField()
+	n := val.NumField() // typ.NumField()
 	for i := 0; i < n; i++ {
-		typi := typ.Field(i)
-		typename := typi.Type.String()
-		if typename == "gorm.Model" {
-			continue
-		}
-		v := val.Field(i)
+		vi := val.Field(i).Interface()
 		cell := r.AddCell()
 		cell.SetStyle(style)
-		switch typename {
-		case "float64":
-			cell.SetFloatWithFormat(v.Interface().(float64), numfmtAccountant)
+		switch vi.(type) {
+		case gorm.Model:
+			continue
+		case float64:
+			cell.SetFloatWithFormat(vi.(float64), numfmtAccountant)
 		default:
-			cell.SetString(v.Interface().(string)) //(v.String())
+			cell.SetString(vi.(string)) //(v.String())
 		}
 	}
 }
@@ -170,26 +167,21 @@ func (v *Invoice) addTo(r *xlsxtra.Row, id int) {
 	r.AddInt(id)
 	//
 	val := reflect.ValueOf(*v)
-	typ := val.Type()
-	n := typ.NumField()
+	n := val.NumField()
 	for i := 0; i < n; i++ {
-		typi := typ.Field(i).Type
-		typename := typi.String()
-		if typename == "gorm.Model" || typename == "[]*inv.Detail" {
-			continue
-		}
-		vv := val.Field(i)
+		vvi := val.Field(i).Interface()
 		// cell := r.AddCell()
 		// cell.SetStyle(style)
-		switch typename {
-		case "time.Time":
-			// cell.SetDate(v.Date)
-			r.AddCell().SetDate(vv.Interface().(time.Time))
-		case "float64":
-			r.AddFloat(numfmtAccountant, vv.Interface().(float64))
+		switch vvi.(type) {
+		case gorm.Model, []*Detail:
+			continue
+		case time.Time:
+			r.AddCell().SetDate(vvi.(time.Time))
+		case float64:
+			r.AddFloat(numfmtAccountant, vvi.(float64))
 		default:
 			// cell.SetString(vv.String())
-			r.AddString(vv.Interface().(string))
+			r.AddString(vvi.(string))
 		}
 	}
 	r.SetStyle(style)
@@ -199,11 +191,11 @@ func (v *Invoice) addTo(r *xlsxtra.Row, id int) {
 func getFieldNameAndChtag(obj interface{}) (fldn, cfldn []string) {
 	vv := reflect.ValueOf(obj)
 	tv := vv.Type()
-	for i := 0; i < tv.NumField(); i++ {
+	for i := 0; i < vv.NumField(); i++ {
 		field := tv.Field(i)
-		typename := field.Type.String()
-		switch typename {
-		case "gorm.Model", "[]*inv.Detail":
+		// typename := field.Type.String()
+		switch vv.Field(i).Interface().(type) {
+		case gorm.Model, []*Detail:
 			continue
 		default:
 			fldn = append(fldn, field.Name)

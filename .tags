@@ -1,0 +1,72 @@
+input_filename	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "input_filename": ".\/data\/inp\/09751085061.csv",$/;"	function	line:2
+input_filename_extention	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "input_filename_extention": ".csv",$/;"	function	line:3
+is_native	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "is_native": true,$/;"	function	line:4
+encoding_name_of_text	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "encoding_name_of_text": "Big5",$/;"	function	line:5
+output_filename	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "output_filename": ".\/data\/out\/09751085061.json",$/;"	function	line:6
+output_filename_extention	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "output_filename_extention": ".json",$/;"	function	line:7
+is_output	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "is_output": false,$/;"	function	line:8
+punch_filename	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "punch_filename": ".\/data\/out\/punch.out"$/;"	function	line:9
+input_filename	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "input_filename": ".\/data\/inp\/09751085061.csv",$/;"	function	line:11
+input_filename_extention	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "input_filename_extention": ".csv",$/;"	function	line:12
+is_native	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "is_native": true,$/;"	function	line:13
+encoding_name_of_text	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "encoding_name_of_text": "Big5",$/;"	function	line:14
+output_filename	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "output_filename": ".\/data\/out\/09751085061.json",$/;"	function	line:15
+output_filename_extention	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "output_filename_extention": ".json",$/;"	function	line:16
+is_output	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "is_output": false,$/;"	function	line:17
+punch_filename	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "punch_filename": ".\/data\/out\/punch.out"$/;"	function	line:18
+input_filename	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "input_filename": ".\/data\/inp\/09751085061.csv",$/;"	function	line:20
+input_filename_extention	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "input_filename_extention": ".csv",$/;"	function	line:21
+is_native	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "is_native": true,$/;"	function	line:22
+encoding_name_of_text	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "encoding_name_of_text": "Big5",$/;"	function	line:23
+output_filename	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "output_filename": ".\/data\/out\/09751085061.json",$/;"	function	line:24
+output_filename_extention	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "output_filename_extention": ".json",$/;"	function	line:25
+is_output	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "is_output": false,$/;"	function	line:26
+punch_filename	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/test/opt01/option.json	/^    "punch_filename": ".\/data\/out\/punch.out"$/;"	function	line:27
+Version	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^var Version = "v0.0.3"$/;"	var	line:18
+init	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^func init() {$/;"	func	line:20
+main	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^func main() {$/;"	func	line:28
+initDb	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^func initDb() {$/;"	func	line:51
+err	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^	var err error$/;"	var	line:53
+checkErr	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^func checkErr(err error) {$/;"	func	line:70
+pfields	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^func pfields() {$/;"	func	line:76
+print	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^func print(obj interface{}, tag string) {$/;"	func	line:82
+imax	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^func imax(a, b int) int {$/;"	func	line:114
+testch	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^func testch() {$/;"	func	line:121
+hzRegexp	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/main.go	/^	var hzRegexp = regexp.MustCompile("^[\\u4e00-\\u9fa5]{3,8}$")$/;"	var	line:128
+Option	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/opts.go	/^type Option struct {$/;"	type	line:19
+String	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/opts.go	/^func (o Option) String() string {$/;"	func	line:33
+DefaultOption	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/opts.go	/^var DefaultOption = Option{$/;"	var	line:54
+GetOptions	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/opts.go	/^func (o *Option) GetOptions() {$/;"	func	line:74
+NewOption	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/opts.go	/^func NewOption() *Option {$/;"	func	line:100
+o	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/opts.go	/^	var o Option$/;"	var	line:101
+XlsMarshaller	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^type XlsMarshaller struct{}$/;"	type	line:55
+MarshalInvoices	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^func (XlsMarshaller) MarshalInvoices(fn string, pvs []*Invoice) error {$/;"	func	line:58
+vh	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^	var vh, dh headType$/;"	var	line:63
+headType	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^type headType struct {$/;"	type	line:86
+addTo	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^func (ht headType) addTo(r *xlsxtra.Row, isDetail bool) {$/;"	func	line:90
+getDefaultDetailCellStyle	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^func getDefaultDetailCellStyle() *xlsx.Style {$/;"	func	line:113
+addTo	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^func (d *Detail) addTo(r *xlsxtra.Row, id int) {$/;"	func	line:126
+getDefaultInvoiceCellStyle	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^func getDefaultInvoiceCellStyle() *xlsx.Style {$/;"	func	line:151
+addTo	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^func (v *Invoice) addTo(r *xlsxtra.Row, id int) {$/;"	func	line:164
+getFieldNameAndChtag	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^func getFieldNameAndChtag(obj interface{}) (fldn, cfldn []string) {$/;"	func	line:191
+UnmarshalInvoices	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/xlsx.go	/^func (XlsMarshaller) UnmarshalInvoices(fn string) ([]*Invoice, error) {$/;"	func	line:210
+Invoice	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^type Invoice struct {$/;"	type	line:50
+String	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (pv Invoice) String() string {$/;"	func	line:71
+v	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^		var v string$/;"	var	line:79
+TableName	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (Invoice) TableName() string {$/;"	func	line:108
+GetArgsTable	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (pv *Invoice) GetArgsTable(args ...string) string {$/;"	func	line:114
+title	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var title string$/;"	var	line:115
+invoiceSlcie	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^type invoiceSlcie struct {$/;"	type	line:137
+detailSlcie	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^type detailSlcie struct {$/;"	type	line:141
+getInvoicesTable	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func getInvoicesTable(pinvs []*Invoice) string {$/;"	func	line:145
+b	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var b bytes.Buffer$/;"	var	line:206
+Detail	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^type Detail struct {$/;"	type	line:281
+String	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (d Detail) String() string {$/;"	func	line:294
+v	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^		var v string$/;"	var	line:302
+GetArgsTable	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (d *Detail) GetArgsTable(args ...string) string {$/;"	func	line:323
+title	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var title string$/;"	var	line:324
+TableName	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func (Detail) TableName() string {$/;"	func	line:341
+getDetailsTable	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func getDetailsTable(pds []*Detail) string {$/;"	func	line:347
+b	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var b bytes.Buffer$/;"	var	line:380
+printInvList	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^func printInvList(pvs []*Invoice) {$/;"	func	line:414
+b	/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv/data.go	/^	var b bytes.Buffer$/;"	var	line:415
