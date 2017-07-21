@@ -69,36 +69,30 @@ type Invoice struct {
 }
 
 func (pv Invoice) String() string {
+	Sf, Ff := fmt.Sprintf, fmt.Fprintf
 	var b bytes.Buffer
-	ff := fmt.Fprintf
-	ds := reflect.ValueOf(pv)
-	t := ds.Type()
-	nh := t.NumField()
-	for i := 0; i < nh; i++ {
-		field := t.Field(i)
-		val := ds.Field(i).Interface()
-		var v string
-		switch val.(type) {
-		case gorm.Model, []*Detail:
+	val := reflect.ValueOf(&pv).Elem()
+	fld := val.Type()
+	var str string
+	for i := 0; i < val.NumField(); i++ {
+		switch fld.Field(i).Name {
+		case "Model", "Details":
 			continue
-		case time.Time:
-			v = io.Sf("%v", val.(time.Time).Format(strDateFormat))
-		case float64:
-			v = io.Sf("%.1f", val.(float64))
+		case "Date":
+			str = val.Field(i).Interface().(time.Time).Format(strDateFormat)
+		case "Total":
+			str = Sf("%.1f", val.Field(i).Interface().(float64))
+		case "UINumber":
+			str = val.Field(i).Interface().(string)[0:2] + "-" + val.Field(i).Interface().(string)[2:]
 		default:
-			if field.Name == "UINumber" {
-				v = val.(string)[0:2] + "-" + val.(string)[2:]
-				break
-			}
-			v = val.(string)
+			str = val.Field(i).Interface().(string)
 		}
-		h := field.Tag.Get("cht")
-		ff(&b, " %s : %s |", h, v)
+		Ff(&b, " %s : %s |", fld.Field(i).Tag.Get("cht"), str)
 	}
-	ff(&b, "\n")
-	lspaces := io.StrSpaces(4)
+	Ff(&b, "\n")
+	lspaces := StrSpaces(4)
 	for i, d := range pv.Details {
-		ff(&b, "%s> %2d. %s", lspaces, i+1, d)
+		Ff(&b, "%s> %2d. %s", lspaces, i+1, d)
 	}
 	return b.String()
 	// re, _ := regexp.Compile("^[\u4e00-\u9fa5]")
@@ -116,8 +110,9 @@ func (pv *Invoice) GetArgsTable(title string) string {
 	if len(title) == 0 {
 		title = "發票清單"
 	}
-	heads := []string{"表頭", "發票狀態", "發票號碼", "發票日期",
-		"商店統編", "商店店名", "載具名稱", "載具號碼", "總金額", "明細清單"}
+	// heads := []string{"表頭", "發票狀態", "發票號碼", "發票日期",
+	// "商店統編", "商店店名", "載具名稱", "載具號碼", "總金額", "明細清單"}
+	_, _, _, heads := GetFieldsInfo(Invoice{}, "cht", "Model")
 	lensp := 0
 	table := ArgsTableN(title, lensp, heads, pv.Head, pv.State,
 		pv.UINumber[0:2]+"-"+pv.UINumber[2:], pv.Date.Format(strDateFormat),
@@ -297,31 +292,25 @@ type Detail struct {
 }
 
 func (d Detail) String() string {
+	Sf, Ff := fmt.Sprintf, fmt.Fprintf
 	var b bytes.Buffer
-	bws := b.WriteString
-	dval := reflect.ValueOf(d)
-	dtyp := dval.Type()
-	nh := dtyp.NumField()
-	for i := 0; i < nh; i++ {
-		fld := dtyp.Field(i)
-		vi := dval.Field(i).Interface()
-		var v string
-		switch vi.(type) {
-		case gorm.Model:
+	val := reflect.ValueOf(&d).Elem()
+	fld := val.Type()
+	var str string
+	for i := 0; i < val.NumField(); i++ {
+		switch fld.Field(i).Name {
+		case "Model":
 			continue
-		case float64:
-			v = io.Sf("%.1f", vi.(float64))
+		case "Subtotal":
+			str = Sf("%.1f", val.Field(i).Interface().(float64))
+		case "UINumber":
+			str = val.Field(i).Interface().(string)[0:2] + "-" + val.Field(i).Interface().(string)[2:]
 		default:
-			if fld.Name == "UINumber" {
-				v = vi.(string)[0:2] + "-" + vi.(string)[2:]
-				break
-			}
-			v = vi.(string)
+			str = val.Field(i).Interface().(string)
 		}
-		h := fld.Tag.Get("cht")
-		bws(io.Sf(" %s : %s |", h, v))
+		Ff(&b, " %s : %s |", fld.Field(i).Tag.Get("cht"), str)
 	}
-	bws("\n")
+	Ff(&b, "\n")
 	return b.String()
 }
 
@@ -364,7 +353,9 @@ func (Detail) TableName() string {
 func GetDetailsTable(pds []*Detail, lensp int) string {
 	Sf := fmt.Sprintf
 	title := "明細清單"
-	dheads := []string{"項次", "表頭", "發票號碼", "小計", "品項名稱"}
+	dheads := []string{"項次"} //, "表頭", "發票號碼", "小計", "品項名稱"}
+	_, _, _, tmp := GetFieldsInfo(Detail{}, "cht", "Model")
+	dheads = append(dheads, tmp...)
 	if lensp < 0 {
 		lensp = 0
 	}
@@ -375,76 +366,13 @@ func GetDetailsTable(pds []*Detail, lensp int) string {
 	}
 	table := ArgsTableN(title, lensp, dheads, data...)
 	return table
-	// Sf, StrSpaces, StrThickLine, StrThinLine := io.Sf, io.StrSpaces, io.StrThickLine, io.StrThinLine
-	// dheads := []string{"項次", "表頭", "發票號碼", "小計", "品項名稱"}
-	// dnf := len(dheads)
-	// dsizes, dcsizes, desizes, dismix :=
-	// 	make([]int, dnf), make([]int, dnf), make([]int, dnf), make([]bool, dnf)
-	// for i := 0; i < dnf; i++ {
-	// 	dcsizes[i], desizes[i], dsizes[i] = CountChars(dheads[i])
-	// 	dismix[i] = checkMixCh(false, dcsizes[i], desizes[i])
-	// }
-	// //
-	// details := make([]detailSlcie, dnf)
-	// for i := 0; i < len(pds); i++ {
-	// 	d := pds[i]
-	// 	details[i].data = []string{
-	// 		Sf("%d", i+1), d.Head, d.UINumber[0:2] + "-" + d.UINumber[2:],
-	// 		Sf("%.1f", d.Subtotal), d.Name,
-	// 	}
-	// 	for k := 0; k < dnf; k++ {
-	// 		str := Sf("%v", details[i].data[k])
-	// 		nc, ne, nmix := CountChars(str)
-	// 		dcsizes[k] = Imax(dcsizes[k], nc)
-	// 		desizes[k] = Imax(desizes[k], ne)
-	// 		dsizes[k] = Imax(dsizes[k], nmix)
-	// 		dismix[k] = getIsMixCh(dismix[k], nc, ne)
-	// 	}
-	// }
-	// dn := Isum(dsizes...) + dnf + (dnf-1)*2 + 1
-	// title := "明細清單"
-	// _, _, dl := CountChars(title)
-	// dm := (dn - dl) / 2
-	// isleft := true
-	// //
-	// var b bytes.Buffer
-	// bws := b.WriteString
-	// //
-	// bws(StrSpaces(dm) + title + "\n")
-	// bws(StrThickLine(dn))
-	// sdfields := make([]string, dnf)
-	// for i := 0; i < dnf; i++ {
-	// 	sdfields[i] = getColStr(dheads[i], dcsizes[i], desizes[i], dsizes[i], dismix[i], isleft)
-	// 	switch i {
-	// 	case 0:
-	// 		bws(Sf("%v", sdfields[i]))
-	// 	default:
-	// 		bws(Sf("  %v", sdfields[i]))
-	// 	}
-	// }
-	// bws("\n")
-	// bws(StrThinLine(dn))
-	// for i := 0; i < len(details); i++ {
-	// 	d := &details[i].data
-	// 	for j := 0; j < dnf; j++ {
-	// 		sdfields[j] = getColStr((*d)[j], dcsizes[j], desizes[j], dsizes[j], dismix[j], isleft)
-	// 		switch j {
-	// 		case 0:
-	// 			bws(Sf("%v", sdfields[j]))
-	// 		default:
-	// 			bws(Sf("  %v", sdfields[j]))
-	// 		}
-	// 	}
-	// 	bws("\n")
-	// }
-	// bws(StrThickLine(dn))
-	// return b.String()
 }
 
 func printInvList(pvs []*Invoice) {
 	var b bytes.Buffer
 	fp := fmt.Fprintf
 	for ip, pv := range pvs {
+		// fp(&b, "%d : %s", ip+1, pv)
 		fp(&b, "%s", pv.GetArgsTable(io.Sf("發票 %d", ip+1)))
 		// for id, pd := range pv.Details {
 		// 	fp(&b, "%s", pd.GetArgsTable(io.Sf("Invoices[%d] -- Details[%d]", ip, id), 7))
