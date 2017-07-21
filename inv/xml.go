@@ -141,7 +141,7 @@ func (XMLMarshaller) UnmarshalInvoices(fn string) ([]*Invoice, error) {
 	// for _, p := range pvs {
 	// 	pchk("%#q\n", *p)
 	// }
-	plog(getInvoicesTable(pvs))
+	plog(GetInvoicesTable(pvs))
 	// pchk("%v\n", vsToTable(pvs))
 	prun("    updating database ...\n")
 	InsertFrom(pvs)

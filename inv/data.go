@@ -111,27 +111,41 @@ func (Invoice) TableName() string {
 }
 
 // GetArgsTable :
-func (pv *Invoice) GetArgsTable(args ...string) string {
-	var title string
-	if len(args) > 0 {
-		title = args[0]
-	} else {
-		title = "Invoice"
+func (pv *Invoice) GetArgsTable(title string) string {
+	Sf := fmt.Sprintf
+	if len(title) == 0 {
+		title = "發票清單"
 	}
-	tab := ArgsTable(
-		title,
-		"表頭", "Head", pv.Head,
-		"發票狀態", "State", pv.State,
-		"發票號碼", "UINumber", pv.UINumber,
-		"發票日期", "Date", pv.Date.Format(strDateFormat),
-		"商店統編", "SUN", pv.SUN,
-		"商店店名", "SName", pv.SName,
-		"載具名稱", "CName", pv.CName,
-		"載具號碼", "CNumber", pv.CNumber,
-		"總金額", "Total", io.Sf("%.1f", pv.Total),
-		"明細清單", "Details", "[]*Detail",
-	)
-	return tab
+	heads := []string{"表頭", "發票狀態", "發票號碼", "發票日期",
+		"商店統編", "商店店名", "載具名稱", "載具號碼", "總金額", "明細清單"}
+	lensp := 0
+	table := ArgsTableN(title, lensp, heads, pv.Head, pv.State,
+		pv.UINumber[0:2]+"-"+pv.UINumber[2:], pv.Date.Format(strDateFormat),
+		pv.SUN, pv.SName, pv.CName, pv.CNumber,
+		Sf("%.1f", pv.Total), "[如下...]")
+	lensp = 7
+	table += GetDetailsTable(pv.Details, lensp)
+	return table
+	// var title string
+	// if len(args) > 0 {
+	// 	title = args[0]
+	// } else {
+	// 	title = "Invoice"
+	// }
+	// tab := ArgsTable(
+	// 	title,
+	// 	"表頭", "Head", pv.Head,
+	// 	"發票狀態", "State", pv.State,
+	// 	"發票號碼", "UINumber", pv.UINumber,
+	// 	"發票日期", "Date", pv.Date.Format(strDateFormat),
+	// 	"商店統編", "SUN", pv.SUN,
+	// 	"商店店名", "SName", pv.SName,
+	// 	"載具名稱", "CName", pv.CName,
+	// 	"載具號碼", "CNumber", pv.CNumber,
+	// 	"總金額", "Total", io.Sf("%.1f", pv.Total),
+	// 	"明細清單", "Details", "[]*Detail",
+	// )
+	// return tab
 }
 
 type invoiceSlcie struct {
@@ -142,24 +156,21 @@ type detailSlcie struct {
 	data []string
 }
 
-func getInvoicesTable(pinvs []*Invoice) string {
+// GetInvoicesTable returns the table string of the list of []*Invoice
+func GetInvoicesTable(pinvs []*Invoice) string {
 	Sf, StrSpaces, StrThickLine, StrThinLine := io.Sf, io.StrSpaces, io.StrThickLine, io.StrThinLine
 	vheads := []string{"項次", "表頭", "發票狀態", "發票號碼", "發票日期",
 		"商店統編", "商店店名", "載具名稱", "載具號碼", "總金額"}
 	dheads := []string{"項次", "表頭", "發票號碼", "小計", "品項名稱"}
 	vnf := len(vheads)
 	dnf := len(dheads)
-	vsizes, vcsizes, vesizes, vismix :=
-		make([]int, vnf), make([]int, vnf), make([]int, vnf), make([]bool, vnf)
-	dsizes, dcsizes, desizes, dismix :=
-		make([]int, dnf), make([]int, dnf), make([]int, dnf), make([]bool, dnf)
+	vsizes := make([]int, vnf)
+	dsizes := make([]int, vnf)
 	for i := 0; i < vnf; i++ {
-		vcsizes[i], vesizes[i], vsizes[i] = CountChars(vheads[i])
-		vismix[i] = checkMixCh(false, vcsizes[i], vesizes[i])
+		_, _, vsizes[i] = CountChars(vheads[i])
 	}
 	for i := 0; i < dnf; i++ {
-		dcsizes[i], desizes[i], dsizes[i] = CountChars(dheads[i])
-		dismix[i] = checkMixCh(false, dcsizes[i], desizes[i])
+		_, _, dsizes[i] = CountChars(vheads[i])
 	}
 	//
 	invs := make([]invoiceSlcie, len(pinvs))
@@ -172,11 +183,8 @@ func getInvoicesTable(pinvs []*Invoice) string {
 		}
 		for j := 0; j < vnf; j++ {
 			str := Sf("%v", invs[i].data[j])
-			nc, ne, nmix := CountChars(str)
-			vcsizes[j] = imax(vcsizes[j], nc)
-			vesizes[j] = imax(vesizes[j], ne)
-			vsizes[j] = imax(vsizes[j], nmix)
-			vismix[j] = getIsMixCh(vismix[j], nc, ne)
+			_, _, nmix := CountChars(str)
+			vsizes[j] = Imax(vsizes[j], nmix)
 		}
 		for j := 0; j < len(p.Details); j++ {
 			d := p.Details[j]
@@ -189,15 +197,12 @@ func getInvoicesTable(pinvs []*Invoice) string {
 			invs[i].details = append(invs[i].details, detail)
 			for k := 0; k < dnf; k++ {
 				str := Sf("%v", detail.data[k])
-				nc, ne, nmix := CountChars(str)
-				dcsizes[k] = imax(dcsizes[k], nc)
-				desizes[k] = imax(desizes[k], ne)
-				dsizes[k] = imax(dsizes[k], nmix)
-				dismix[k] = getIsMixCh(dismix[k], nc, ne)
+				_, _, nmix := CountChars(str)
+				dsizes[k] = Imax(dsizes[k], nmix)
 			}
 		}
 	}
-	vn := isum(vsizes...) + vnf + (vnf-1)*2 + 1
+	vn := Isum(vsizes...) + vnf + (vnf-1)*2 + 1
 	title := "發票清單"
 	_, _, vl := CountChars(title)
 	vm := (vn - vl) / 2
@@ -211,7 +216,7 @@ func getInvoicesTable(pinvs []*Invoice) string {
 	vhtab := StrThickLine(vn)
 	svfields := make([]string, vnf)
 	for i := 0; i < vnf; i++ {
-		svfields[i] = getColStr(vheads[i], vcsizes[i], vesizes[i], vsizes[i], vismix[i], isleft)
+		svfields[i] = GetColStr(vheads[i], vsizes[i], isleft)
 		switch i {
 		case 0:
 			vhtab += Sf("%v", svfields[i])
@@ -221,11 +226,11 @@ func getInvoicesTable(pinvs []*Invoice) string {
 	}
 	vhtab += "\n" + StrThinLine(vn)
 	lspaces := io.StrSpaces(7)
-	dn := isum(dsizes...) + dnf + (dnf-1)*2 + 1
+	dn := Isum(dsizes...) + dnf + (dnf-1)*2 + 1
 	dhtab := lspaces + StrThickLine(dn)
 	sdfields := make([]string, dnf)
 	for i := 0; i < dnf; i++ {
-		sdfields[i] = getColStr(dheads[i], dcsizes[i], desizes[i], dsizes[i], dismix[i], isleft)
+		sdfields[i] = GetColStr(dheads[i], dsizes[i], isleft)
 		switch i {
 		case 0:
 			dhtab += lspaces + Sf("%v", sdfields[i])
@@ -240,7 +245,7 @@ func getInvoicesTable(pinvs []*Invoice) string {
 		bws(vhtab)
 		// pchk("%v : %v \n", vnf, v)
 		for j := 0; j < vnf; j++ {
-			svfields[j] = getColStr((*v)[j], vcsizes[j], vesizes[j], vsizes[j], vismix[j], isleft)
+			svfields[j] = GetColStr((*v)[j], vsizes[j], isleft)
 			switch j {
 			case 0:
 				bws(Sf("%v", svfields[j]))
@@ -257,7 +262,7 @@ func getInvoicesTable(pinvs []*Invoice) string {
 			for k := 0; k < len(details); k++ {
 				d := &details[k].data
 				for j := 0; j < dnf; j++ {
-					sdfields[j] = getColStr((*d)[j], dcsizes[j], desizes[j], dsizes[j], dismix[j], isleft)
+					sdfields[j] = GetColStr((*d)[j], dsizes[j], isleft)
 					switch j {
 					case 0:
 						bws(lspaces + Sf("%v", sdfields[j]))
@@ -294,24 +299,24 @@ type Detail struct {
 func (d Detail) String() string {
 	var b bytes.Buffer
 	bws := b.WriteString
-	ds := reflect.ValueOf(d)
-	t := ds.Type()
-	nh := t.NumField()
+	dval := reflect.ValueOf(d)
+	dtyp := dval.Type()
+	nh := dtyp.NumField()
 	for i := 0; i < nh; i++ {
-		fld := t.Field(i)
-		val := ds.Field(i).Interface()
+		fld := dtyp.Field(i)
+		vi := dval.Field(i).Interface()
 		var v string
-		switch val.(type) {
+		switch vi.(type) {
 		case gorm.Model:
 			continue
 		case float64:
-			v = io.Sf("%.1f", val.(float64))
+			v = io.Sf("%.1f", vi.(float64))
 		default:
 			if fld.Name == "UINumber" {
-				v = val.(string)[0:2] + "-" + val.(string)[2:]
+				v = vi.(string)[0:2] + "-" + vi.(string)[2:]
 				break
 			}
-			v = val.(string)
+			v = vi.(string)
 		}
 		h := fld.Tag.Get("cht")
 		bws(io.Sf(" %s : %s |", h, v))
@@ -321,21 +326,32 @@ func (d Detail) String() string {
 }
 
 // GetArgsTable :
-func (d *Detail) GetArgsTable(args ...string) string {
-	var title string
-	if len(args) > 0 {
-		title = args[0]
-	} else {
-		title = "Detail"
+func (d *Detail) GetArgsTable(title string, lensp int) string {
+	Sf := fmt.Sprintf
+	if len(title) == 0 {
+		title = "明細清單"
 	}
-	tab := ArgsTable(
-		title,
-		"表頭", "Head", d.Head,
-		"發票號碼", "UINumber", d.UINumber,
-		"小計", "Subtotal", io.Sf("%.1f", d.Subtotal),
-		"品項名稱", "Name", d.Name,
-	)
-	return tab
+	dheads := []string{"表頭", "發票號碼", "小計", "品項名稱"}
+	if lensp < 0 {
+		lensp = 0
+	}
+	table := ArgsTableN(title, lensp, dheads, d.Head,
+		d.UINumber[0:2]+"-", d.UINumber[2:], Sf("%.1f", d.Subtotal), d.Name)
+	return table
+	// var title string
+	// if len(args) > 0 {
+	// 	title = args[0]
+	// } else {
+	// 	title = "Detail"
+	// }
+	// tab := ArgsTable(
+	// 	title,
+	// 	"表頭", "Head", d.Head,
+	// 	"發票號碼", "UINumber", d.UINumber,
+	// 	"小計", "Subtotal", io.Sf("%.1f", d.Subtotal),
+	// 	"品項名稱", "Name", d.Name,
+	// )
+	// return tab
 }
 
 // TableName : set Detail's table name to be `details`
@@ -344,85 +360,96 @@ func (Detail) TableName() string {
 	return "details"
 }
 
-// getDetailsTable
-func getDetailsTable(pds []*Detail) string {
-	Sf, StrSpaces, StrThickLine, StrThinLine := io.Sf, io.StrSpaces, io.StrThickLine, io.StrThinLine
-	dheads := []string{"項次", "表頭", "發票號碼", "小計", "品項名稱"}
-	dnf := len(dheads)
-	dsizes, dcsizes, desizes, dismix :=
-		make([]int, dnf), make([]int, dnf), make([]int, dnf), make([]bool, dnf)
-	for i := 0; i < dnf; i++ {
-		dcsizes[i], desizes[i], dsizes[i] = CountChars(dheads[i])
-		dismix[i] = checkMixCh(false, dcsizes[i], desizes[i])
-	}
-	//
-	details := make([]detailSlcie, dnf)
-	for i := 0; i < len(pds); i++ {
-		d := pds[i]
-		details[i].data = []string{
-			Sf("%d", i+1), d.Head, d.UINumber[0:2] + "-" + d.UINumber[2:],
-			Sf("%.1f", d.Subtotal), d.Name,
-		}
-		for k := 0; k < dnf; k++ {
-			str := Sf("%v", details[i].data[k])
-			nc, ne, nmix := CountChars(str)
-			dcsizes[k] = imax(dcsizes[k], nc)
-			desizes[k] = imax(desizes[k], ne)
-			dsizes[k] = imax(dsizes[k], nmix)
-			dismix[k] = getIsMixCh(dismix[k], nc, ne)
-		}
-	}
-	dn := isum(dsizes...) + dnf + (dnf-1)*2 + 1
+// GetDetailsTable returns the table string of the list of []*Detail
+func GetDetailsTable(pds []*Detail, lensp int) string {
+	Sf := fmt.Sprintf
 	title := "明細清單"
-	_, _, dl := CountChars(title)
-	dm := (dn - dl) / 2
-	isleft := true
-	//
-	var b bytes.Buffer
-	bws := b.WriteString
-	//
-	bws(StrSpaces(dm) + title + "\n")
-	bws(StrThickLine(dn))
-	sdfields := make([]string, dnf)
-	for i := 0; i < dnf; i++ {
-		sdfields[i] = getColStr(dheads[i], dcsizes[i], desizes[i], dsizes[i], dismix[i], isleft)
-		switch i {
-		case 0:
-			bws(Sf("%v", sdfields[i]))
-		default:
-			bws(Sf("  %v", sdfields[i]))
-		}
+	dheads := []string{"項次", "表頭", "發票號碼", "小計", "品項名稱"}
+	if lensp < 0 {
+		lensp = 0
 	}
-	bws("\n")
-	bws(StrThinLine(dn))
-	for i := 0; i < len(details); i++ {
-		d := &details[i].data
-		for j := 0; j < dnf; j++ {
-			sdfields[j] = getColStr((*d)[j], dcsizes[j], desizes[j], dsizes[j], dismix[j], isleft)
-			switch j {
-			case 0:
-				bws(Sf("%v", sdfields[j]))
-			default:
-				bws(Sf("  %v", sdfields[j]))
-			}
-		}
-		bws("\n")
+	var data []interface{}
+	for i, d := range pds {
+		data = append(data, i+1, d.Head,
+			d.UINumber[0:2]+"-"+d.UINumber[2:], Sf("%.1f", d.Subtotal), d.Name)
 	}
-	bws(StrThickLine(dn))
-	return b.String()
+	table := ArgsTableN(title, lensp, dheads, data...)
+	return table
+	// Sf, StrSpaces, StrThickLine, StrThinLine := io.Sf, io.StrSpaces, io.StrThickLine, io.StrThinLine
+	// dheads := []string{"項次", "表頭", "發票號碼", "小計", "品項名稱"}
+	// dnf := len(dheads)
+	// dsizes, dcsizes, desizes, dismix :=
+	// 	make([]int, dnf), make([]int, dnf), make([]int, dnf), make([]bool, dnf)
+	// for i := 0; i < dnf; i++ {
+	// 	dcsizes[i], desizes[i], dsizes[i] = CountChars(dheads[i])
+	// 	dismix[i] = checkMixCh(false, dcsizes[i], desizes[i])
+	// }
+	// //
+	// details := make([]detailSlcie, dnf)
+	// for i := 0; i < len(pds); i++ {
+	// 	d := pds[i]
+	// 	details[i].data = []string{
+	// 		Sf("%d", i+1), d.Head, d.UINumber[0:2] + "-" + d.UINumber[2:],
+	// 		Sf("%.1f", d.Subtotal), d.Name,
+	// 	}
+	// 	for k := 0; k < dnf; k++ {
+	// 		str := Sf("%v", details[i].data[k])
+	// 		nc, ne, nmix := CountChars(str)
+	// 		dcsizes[k] = Imax(dcsizes[k], nc)
+	// 		desizes[k] = Imax(desizes[k], ne)
+	// 		dsizes[k] = Imax(dsizes[k], nmix)
+	// 		dismix[k] = getIsMixCh(dismix[k], nc, ne)
+	// 	}
+	// }
+	// dn := Isum(dsizes...) + dnf + (dnf-1)*2 + 1
+	// title := "明細清單"
+	// _, _, dl := CountChars(title)
+	// dm := (dn - dl) / 2
+	// isleft := true
+	// //
+	// var b bytes.Buffer
+	// bws := b.WriteString
+	// //
+	// bws(StrSpaces(dm) + title + "\n")
+	// bws(StrThickLine(dn))
+	// sdfields := make([]string, dnf)
+	// for i := 0; i < dnf; i++ {
+	// 	sdfields[i] = getColStr(dheads[i], dcsizes[i], desizes[i], dsizes[i], dismix[i], isleft)
+	// 	switch i {
+	// 	case 0:
+	// 		bws(Sf("%v", sdfields[i]))
+	// 	default:
+	// 		bws(Sf("  %v", sdfields[i]))
+	// 	}
+	// }
+	// bws("\n")
+	// bws(StrThinLine(dn))
+	// for i := 0; i < len(details); i++ {
+	// 	d := &details[i].data
+	// 	for j := 0; j < dnf; j++ {
+	// 		sdfields[j] = getColStr((*d)[j], dcsizes[j], desizes[j], dsizes[j], dismix[j], isleft)
+	// 		switch j {
+	// 		case 0:
+	// 			bws(Sf("%v", sdfields[j]))
+	// 		default:
+	// 			bws(Sf("  %v", sdfields[j]))
+	// 		}
+	// 	}
+	// 	bws("\n")
+	// }
+	// bws(StrThickLine(dn))
+	// return b.String()
 }
 
 func printInvList(pvs []*Invoice) {
 	var b bytes.Buffer
 	fp := fmt.Fprintf
 	for ip, pv := range pvs {
-		// fp(&b, "Invoice[%d] :\n", ip)
-		fp(&b, "%s", pv.GetArgsTable(io.Sf("Invoices[%d]", ip)))
-		for id, pd := range pv.Details {
-			// fp(&b, "Invoice[%d] -- Details[%d] :\n", ip, id)
-			fp(&b, "%s", pd.GetArgsTable(io.Sf("Invoices[%d] -- Details[%d]", ip, id)))
-		}
-		fp(&b, "\n")
+		fp(&b, "%s", pv.GetArgsTable(io.Sf("發票 %d", ip+1)))
+		// for id, pd := range pv.Details {
+		// 	fp(&b, "%s", pd.GetArgsTable(io.Sf("Invoices[%d] -- Details[%d]", ip, id), 7))
+		// }
+		// fp(&b, "\n")
 	}
 	pchk("%s", b.String())
 }

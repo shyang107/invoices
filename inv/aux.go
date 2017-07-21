@@ -6,6 +6,7 @@ import (
 	"os"
 	"reflect"
 	"runtime"
+	"strings"
 	"unicode"
 	"unsafe"
 
@@ -97,26 +98,29 @@ func stopfunc(fid int) {
 	pfsep("%s", io.StrThinLine(60))
 }
 
-// []byte to string
-func btostr(bs []byte) string {
+// BtoStr convert []byte to string
+func BtoStr(bs []byte) string {
 	return *(*string)(unsafe.Pointer(&bs))
 }
 
-func imin(a, b int) int {
+// Imin reports the minimum value of a and b
+func Imin(a, b int) int {
 	if a < b {
 		return a
 	}
 	return b
 }
 
-func imax(a, b int) int {
+// Imax reports the maximum value of a and b
+func Imax(a, b int) int {
 	if a > b {
 		return a
 	}
 	return b
 }
 
-func isum(args ...int) int {
+// Isum reports the summation of args...
+func Isum(args ...int) int {
 	n := 0
 	for _, a := range args {
 		n += a
@@ -159,92 +163,19 @@ func checkErr(err error) {
 		panic(err)
 	}
 }
-func getIsMixCh(ismix bool, nc, ne int) bool {
-	if ismix {
-		return true
-	}
-	return ((nc > 0) && (ne > 0))
-}
 
-func checkMixCh(ismix bool, nc, ne int) bool {
-	if ismix {
-		return true
-	}
-	return ((nc > 0) && (ne > 0))
-}
-
-func checkMixChs(ismix *[]bool, nc, ne []int) {
-	for i := 0; i < len(*ismix); i++ {
-		(*ismix)[i] = checkMixCh((*ismix)[i], nc[i], ne[i])
-	}
-}
-
-// func getColStr(s string, ncmax, nemax int, ismix bool, left bool) string {
-// 	nc, ne := CountChEngChar(s)
-// 	size := nc*2 + ne // s 實際佔位數
-// 	var sizemax int
-// 	if ismix {
-// 		sizemax = ncmax*2 + nemax // 欄位最大實際佔位數
-// 	} else {
-// 		sizemax = imax(ncmax*2, nemax)
-// 	}
-// 	// io.Pfred("!!!    nc = %d,    ne = %d,     size = %d, mix = %t <- %q\n", nc, ne, size, ismix, s)
-// 	var tab string
-// 	if left {
-// 		tab = s + io.StrSpaces(sizemax-size)
-// 	} else {
-// 		tab = io.StrSpaces(sizemax-size) + s
-// 	}
-// 	// io.Pforan("!!! ncmax = %d, nemax = %d, sizemax = %d, mix = %t <- %q\n", ncmax, nemax, sizemax, ismix, tab)
-// 	return " " + tab
-// }
-
-func getColStr(s string, ncmax, nemax, sizemax int, ismix bool, left bool) string {
-	nc, ne := CountChEngChar(s)
-	size := nc*2 + ne // s 實際佔位數
+// GetColStr return string use in field
+func GetColStr(s string, size int, left bool) string {
+	_, _, n := CountChars(s)
+	spaces := strings.Repeat(" ", size-n)
+	// size := nc*2 + ne // s 實際佔位數
 	var tab string
 	if left {
-		tab = s + io.StrSpaces(sizemax-size)
+		tab = fmt.Sprintf("%v%s", s, spaces)
 	} else {
-		tab = io.StrSpaces(sizemax-size) + s
+		tab = fmt.Sprintf("%s%v", spaces, s)
 	}
 	return " " + tab
-}
-
-// CountChEngChar returns the number of each other of chinses and english characters
-func CountChEngChar(str string) (nc int, ne int) {
-	for _, r := range str {
-		// io.Pf("%q ", r)
-		if unicode.Is(unicode.Scripts["Han"], r) {
-			nc++
-		} else {
-			ne++
-		}
-	}
-	return nc, ne
-}
-
-// CountChEngChar0 returns the number of each other of chinses and english characters
-func CountChEngChar0(str string) (nc int, ne int) {
-	for _, r := range str {
-		plog("%#U ", r)
-		if len(string(r)) > 1 {
-			plog("<- Han")
-			nc++
-		} else {
-			plog("<- eng.")
-			ne++
-		}
-		// if unicode.Is(unicode.Scripts["Han"], r) {
-		// 	plog("<- Han")
-		// 	nc++
-		// } else {
-		// 	plog("<- eng.")
-		// 	ne++
-		// }
-		io.Pl()
-	}
-	return nc, ne
 }
 
 // CountChars returns the number of each other of chinses and english characters
@@ -260,35 +191,6 @@ func CountChars(str string) (nc, ne, n int) {
 	}
 	n = 2*nc + ne
 	return nc, ne, n
-}
-
-func countNPos(nc, ne int) (np int) {
-	ismix := ((nc > 0) && (ne > 0))
-	if ismix {
-		np = 2*nc + ne
-	} else {
-		if nc > 0 {
-			np = 2 * nc
-		} else {
-			np = ne
-		}
-	}
-	return np
-}
-
-// CountNPos :
-func CountNPos(nc, ne int) (np int) {
-	ismix := ((nc > 0) && (ne > 0))
-	if ismix {
-		np = 2*nc + ne
-	} else {
-		if nc > 0 {
-			np = 2 * nc
-		} else {
-			np = ne
-		}
-	}
-	return np
 }
 
 // IsChineseChar judges whether the chinese character exists ?
@@ -314,12 +216,12 @@ func IsChineseChar(str string) bool {
 //                 description, key, value, ...
 func ArgsTable(title string, data ...interface{}) string {
 	heads := []string{"description", "key", "value"}
-	return ArgsTableN(title, heads, data...)
+	return ArgsTableN(title, 0, heads, data...)
 }
 
 func setupMaxSize(psizes *[]int, compared []int) {
 	for i := 0; i < len(*psizes); i++ {
-		(*psizes)[i] = imax((*psizes)[i], compared[i])
+		(*psizes)[i] = Imax((*psizes)[i], compared[i])
 	}
 }
 
@@ -327,26 +229,27 @@ func setupMaxSize(psizes *[]int, compared []int) {
 //  Input:
 //   title -- title of table; e.g. INPUT ARGUMENTS
 //	 heads -- heads of table; e.g. []string{ col1,  col2, ... }
+//	 lensp -- length of leading spaces in every row
 //   data  -- sets of THREE items in the following order:
 //                 column1, column2, column3, ...
 //                 column1, column2, column3, ...
 //                      ...
 //                 column1, column2, column3, ...
-func ArgsTableN(title string, heads []string, data ...interface{}) string {
+func ArgsTableN(title string, lensp int, heads []string, data ...interface{}) string {
 	Sf, StrSpaces, StrThickLine, StrThinLine := io.Sf, io.StrSpaces, io.StrThickLine, io.StrThinLine
 	nf := len(heads)
 	ndat := len(data)
 	if ndat < nf {
 		return ""
 	}
+	if lensp < 0 {
+		lensp = 0
+	}
+	lspaces := io.StrSpaces(lensp)
 	nlines := ndat / nf
 	sizes := make([]int, nf)
-	csizes := make([]int, nf)
-	esizes := make([]int, nf)
-	ismixch := make([]bool, nf)
 	for i := 0; i < nf; i++ {
-		csizes[i], esizes[i], sizes[i] = CountChars(heads[i])
-		ismixch[i] = getIsMixCh(false, csizes[i], esizes[i])
+		_, _, sizes[i] = CountChars(heads[i])
 	}
 	for i := 0; i < nlines; i++ {
 		if i*nf+(nf-1) >= ndat {
@@ -354,50 +257,45 @@ func ArgsTableN(title string, heads []string, data ...interface{}) string {
 		}
 		for j := 0; j < nf; j++ {
 			str := Sf("%v", data[i*nf+j])
-			nc, ne, nmix := CountChars(str)
-			csizes[j] = imax(csizes[j], nc)
-			esizes[j] = imax(esizes[j], ne)
-			sizes[j] = imax(sizes[j], nmix)
-			ismixch[j] = getIsMixCh(ismixch[j], nc, ne)
+			_, _, nmix := CountChars(str)
+			sizes[j] = Imax(sizes[j], nmix)
 		}
 	}
 	// strfmt := Sf("%%v  %%v  %%v\n")
-	n := isum(sizes...) + nf + (nf-1)*2 + 1 // sizes[0] + sizes[1] + sizes[2] + 3 + 4
-	tnc, tne := CountChEngChar(title)
-	l := countNPos(tnc, tne)
+	n := Isum(sizes...) + nf + (nf-1)*2 + 1 // sizes[0] + sizes[1] + sizes[2] + 3 + 4
+	_, _, l := CountChars(title)
 	m := (n - l) / 2
 	//
 	var b bytes.Buffer
 	bw := b.WriteString
 	//
-	bw(StrSpaces(m) + title + "\n")
-	bw(StrThickLine(n))
+	bw(StrSpaces(m+lensp) + title + "\n")
+	bw(lspaces + StrThickLine(n))
 	isleft := true
 	sfields := make([]string, nf)
 	for i := 0; i < nf; i++ {
-		sfields[i] = getColStr(heads[i], csizes[i], esizes[i], sizes[i], ismixch[i], isleft)
+		sfields[i] = GetColStr(heads[i], sizes[i], isleft)
 		switch i {
 		case 0:
-			bw(Sf("%v", sfields[i]))
+			bw(Sf("%v", lspaces+sfields[i]))
 		default:
 			bw(Sf("  %v", sfields[i]))
 		}
 	}
 	bw("\n")
-	bw(StrThinLine(n))
+	bw(lspaces + StrThinLine(n))
 	for i := 0; i < nlines; i++ {
 		for j := 0; j < nf; j++ {
-			sfields[j] = getColStr(Sf("%v", data[i*nf+j]),
-				csizes[j], esizes[j], sizes[j], ismixch[j], isleft)
+			sfields[j] = GetColStr(Sf("%v", data[i*nf+j]), sizes[j], isleft)
 			switch j {
 			case 0:
-				bw(Sf("%v", sfields[j]))
+				bw(Sf("%v", lspaces+sfields[j]))
 			default:
 				bw(Sf("  %v", sfields[j]))
 			}
 		}
 		bw("\n")
 	}
-	bw(StrThickLine(n))
+	bw(lspaces + StrThickLine(n))
 	return b.String()
 }

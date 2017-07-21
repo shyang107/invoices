@@ -51,7 +51,7 @@ func (JSONMarshaller) UnmarshalInvoices(fn string) ([]*Invoice, error) {
 	if j.FileVesion > fileVesion {
 		return nil, chk.Err("version %d is too new to read", j.FileVesion)
 	}
-	plog(getInvoicesTable(j.Invoices))
+	plog(GetInvoicesTable(j.Invoices))
 	prun("    updating database ...\n")
 	InsertFrom(j.Invoices)
 	return j.Invoices, nil

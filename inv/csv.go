@@ -101,7 +101,7 @@ func (CsvMarshaller) UnmarshalInvoices(fn string) ([]*Invoice, error) {
 	}
 	prun("    combining invoices ...\n")
 	combineInvoice(pinvs, pdets)
-	plog(getInvoicesTable(pinvs))
+	plog(GetInvoicesTable(pinvs))
 	// printInvList(pinvs)
 	prun("    updating database ...\n")
 	InsertFrom(pinvs)
