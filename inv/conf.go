@@ -15,6 +15,7 @@ type (
 		IsInitializing bool
 		DBPath         string
 		Verbose        bool
+		Dump           bool
 	}
 )
 
@@ -25,6 +26,7 @@ func (c Config) String() string {
 		"initalizing enviroment of applicaton to inital state", "IsInitializing", c.IsInitializing,
 		"path of database", "DBPath", c.DBPath,
 		"verbose output", "Verbose", c.Verbose,
+		"dump all records from database", "Dump", c.Dump,
 	)
 	return tab
 }
@@ -77,6 +79,10 @@ func ConfigCmds(version string) {
 			Name:  "verbose,b",
 			Usage: "verbose output",
 		},
+		cli.BoolFlag{
+			Name:  "dump,d",
+			Usage: "dump all records from database",
+		},
 	}
 	app.Run(os.Args)
 	stopfunc(fcstop)
@@ -91,6 +97,10 @@ func confRun(c *cli.Context) error {
 		Cfg.Verbose = c.Bool("verbose")
 		io.Verbose = Cfg.Verbose
 		chk.Verbose = Cfg.Verbose
+	}
+
+	if c.Bool("dump") {
+		Cfg.Dump = c.Bool("dump")
 	}
 
 	if c.NArg() == 0 {

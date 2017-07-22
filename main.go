@@ -29,18 +29,25 @@ func main() {
 	//
 	inv.ConfigCmds(Version)
 	//
-	inv.Opt.GetOptions()
-	//
 	if inv.Cfg.IsInitializing {
 		inv.InitDB()
 	}
 	initDb()
 	//
-	pvs, err := inv.ReadInvoices()
-	checkErr(err)
-	if inv.Opt.IsOutput {
-		err = inv.WriteInvoices(pvs)
+	inv.Opt.GetOptions()
+	//
+	if inv.Cfg.Dump {
+		if err := inv.DumpData(); err != nil {
+			panic(err)
+		}
+	} else {
+		//
+		pvs, err := inv.ReadInvoices()
 		checkErr(err)
+		if inv.Opt.IsOutput {
+			err = inv.WriteInvoices(pvs)
+			checkErr(err)
+		}
 	}
 	// pfields()
 	duration := time.Since(start) //.Seconds()

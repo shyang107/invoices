@@ -71,7 +71,7 @@ type Invoice struct {
 func (pv Invoice) String() string {
 	Sf, Ff := fmt.Sprintf, fmt.Fprintf
 	var b bytes.Buffer
-	val := reflect.ValueOf(&pv).Elem()
+	val := reflect.ValueOf(pv) //.Elem()
 	fld := val.Type()
 	var str string
 	for i := 0; i < val.NumField(); i++ {
@@ -294,7 +294,7 @@ type Detail struct {
 func (d Detail) String() string {
 	Sf, Ff := fmt.Sprintf, fmt.Fprintf
 	var b bytes.Buffer
-	val := reflect.ValueOf(&d).Elem()
+	val := reflect.ValueOf(d) //.Elem()
 	fld := val.Type()
 	var str string
 	for i := 0; i < val.NumField(); i++ {
@@ -320,7 +320,8 @@ func (d *Detail) GetArgsTable(title string, lensp int) string {
 	if len(title) == 0 {
 		title = "明細清單"
 	}
-	dheads := []string{"表頭", "發票號碼", "小計", "品項名稱"}
+	// dheads := []string{"表頭", "發票號碼", "小計", "品項名稱"}
+	_, _, _, dheads := GetFieldsInfo(Detail{}, "cht", "Model")
 	if lensp < 0 {
 		lensp = 0
 	}

@@ -89,7 +89,7 @@ func (o *Option) GetOptions() {
 	o.OfnSuffix = io.FnExt(o.OutFn)
 	o.IsOutput = io.Atob(c.GetValue("output", "is_output"))
 	// [punch]
-	o.PunchFn = c.GetValue("punch", "punchFile")
+	o.PunchFn = os.ExpandEnv(c.GetValue("punch", "punchFile"))
 	//
 	plog("%s", *o)
 	stopfunc(fostop) //, "GetFromConfig")
