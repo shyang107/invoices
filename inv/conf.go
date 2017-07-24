@@ -2,7 +2,6 @@ package inv
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/cpmech/gosl/chk"
@@ -44,6 +43,7 @@ func (c Config) String() string {
 		"Configuration",
 		"initalizing enviroment of applicaton to inital state", "IsInitializeDB", c.IsInitializeDB,
 		"path of database", "DBPath", c.DBPath,
+		"path of case", "CasePath", c.CasePath,
 		"verbose output", "Verbose", c.Verbose,
 		"does dump all records from database?", "IsDump", c.IsDump,
 		"dump all records from database into file", "DumpPath", c.DumpPath,
@@ -153,8 +153,6 @@ func (c *Config) ReadCommandLine() {
 		},
 	}
 	app.Run(os.Args)
-	fi, _ := os.Stat(cfg.DBPath)
-	plog("%#v\n", fi)
 	stopfunc(fcstop)
 }
 func initial(c *cli.Context) error {
@@ -167,6 +165,7 @@ func initial(c *cli.Context) error {
 func dump(c *cli.Context) error {
 	io.Verbose = true
 	pstat("dump all records from database...\n")
+	cfg.IsDump = c.GlobalBool("dump")
 	if c.IsSet("file") {
 		dfn := c.String("file")
 		pchk("%v\n", dfn)
@@ -185,25 +184,38 @@ func runCommands(c *cli.Context) error {
 		chk.Verbose = cfg.Verbose
 	}
 
-	if c.IsSet("dump") {
-		cfg.IsDump = c.GlobalBool("dump")
-	}
-
-	if c.NArg() == 0 {
-		perr("# Config-file of case is not specified -- use default: %q\n", cfg.CasePath)
-	} else {
-		cpath := os.ExpandEnv(c.Args()[0])
+	if c.IsSet("case") {
+		cpath := os.ExpandEnv(c.GlobalString("case"))
 		if isNotExist(cpath) {
-			log.Panicln("Config-file of case does not exist! ")
+			perr("The specified config-file of case does not exist! (%q)", cpath)
 			os.Exit(1)
 		}
 		cfg.CasePath = cpath
 	}
 
-	return confexec()
+	return confexec(NewOption())
 }
 
-func confexec() error {
+func confexec(ol OptionList) error {
 	plog("%v", cfg)
+	if err := ol.ReadOptions(cfg.CasePath); err != nil {
+		return err
+	}
+	//
+	connectdb()
+	//
+	// for _, o := range ol.List {
+	for i := 0; i < len(*ol.List); i++ {
+		o := (*ol.List)[i]
+		plog("%s", o)
+		pvs, err := o.ReadInvoices()
+		if err != nil {
+			perr("%v\n", err)
+			return err
+		}
+		if o.IsOutput {
+			err = o.WriteInvoices(pvs)
+		}
+	}
 	return nil
 }

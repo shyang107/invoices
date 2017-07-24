@@ -1,5 +1,5 @@
 [{
-    "input_filename": "./data/inp/09102989061-1.csv",
+    "input_filename": "./inp/09102989061-1.csv",
     "input_filename_extention": ".csv",
     "is_native": true,
     "encoding_name_of_text": "Big5",
@@ -8,7 +8,7 @@
     "is_output": false,
     "punch_filename": "./out/punch.out"
 }, {
-    "input_filename": "./data/inp/09102989061-2.csv",
+    "input_filename": "./inp/09102989061-2.csv",
     "input_filename_extention": ".csv",
     "is_native": true,
     "encoding_name_of_text": "Big5",
@@ -17,7 +17,7 @@
     "is_output": false,
     "punch_filename": "./out/punch.out"
 }, {
-    "input_filename": "./data/inp/09102989061-3.csv",
+    "input_filename": "./inp/09102989061-3.csv",
     "input_filename_extention": ".csv",
     "is_native": true,
     "encoding_name_of_text": "Big5",

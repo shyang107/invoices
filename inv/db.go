@@ -24,7 +24,7 @@ func initialdb() {
 	defer db.Close()
 	//
 	// Migrate the schema
-	db.AutoMigrate(&Invoice{}, &Detail{})
+	db.AutoMigrate(&Invoice{}, &Detail{}, &FileBunker{})
 	db.Model(&Invoice{}).Related(&Detail{}, "uin")
 	// db.Model(&Invoice{}).AddUniqueIndex("idx_invoices_number", "uin")
 	// db.Model(&Invoice{}).AddForeignKey("uin", "details(id)", "RESTRICT", "RESTRICT")

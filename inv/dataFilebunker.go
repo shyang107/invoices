@@ -41,7 +41,7 @@ func (f FileBunker) String() string {
 // TableName : set Detail's table name to be `details`
 func (FileBunker) TableName() string {
 	// custom table name, this is default
-	return "filebunker"
+	return "file_bunker"
 }
 
 // GetArgsTable :

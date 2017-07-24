@@ -15,11 +15,11 @@ type InvoiceUnmarshaller interface {
 }
 
 // ReadInvoices reads invoice-record from fn
-func ReadInvoices() ([]*Invoice, error) {
+func (o *Option) ReadInvoices() ([]*Invoice, error) {
 	var unmarshaller InvoiceUnmarshaller
 	startfunc(ffstart) //, "ReadInvoices")
 	// pstat("file-type : %q\n", Opts.IfnSuffix)
-	switch Opt.IfnSuffix {
+	switch o.IfnSuffix {
 	case ".csv":
 		pstat("%q\n", "CsvMarshaller")
 		unmarshaller = CsvMarshaller{}
@@ -34,18 +34,18 @@ func ReadInvoices() ([]*Invoice, error) {
 		unmarshaller = XlsMarshaller{}
 	}
 	if unmarshaller != nil {
-		invs, err := unmarshaller.UnmarshalInvoices(Opt.InpFn)
+		invs, err := unmarshaller.UnmarshalInvoices(o.InpFn)
 		stopfunc(ffstop) //, "ReadInvoices")
 		return invs, err
 	}
-	return nil, chk.Err("not supprted file-type : %s (%s)", Opt.IfnSuffix, Opt.InpFn)
+	return nil, chk.Err("not supprted file-type : %s (%s)", o.IfnSuffix, o.InpFn)
 }
 
 // WriteInvoices reads invoice-record from fn
-func WriteInvoices(invs []*Invoice) error {
+func (o *Option) WriteInvoices(invs []*Invoice) error {
 	var marshaller InvoiceMarshaller
 	startfunc(ffstart) //, "ReadInvoices")
-	switch Opt.OfnSuffix {
+	switch o.OfnSuffix {
 	case ".csv":
 		pstat("%q\n", "CsvMarshaller")
 		marshaller = CsvMarshaller{}
@@ -60,9 +60,9 @@ func WriteInvoices(invs []*Invoice) error {
 		marshaller = XlsMarshaller{}
 	}
 	if marshaller != nil {
-		err := marshaller.MarshalInvoices(Opt.OutFn, invs)
+		err := marshaller.MarshalInvoices(o.OutFn, invs)
 		stopfunc(ffstop) //, "ReadInvoices")
 		return err
 	}
-	return chk.Err("not supprted file-type : %s (%s)", Opt.IfnSuffix, Opt.InpFn)
+	return chk.Err("not supprted file-type : %s (%s)", o.IfnSuffix, o.InpFn)
 }
