@@ -1,6 +1,6 @@
 # invoices
 
-`invoices` use to handle the invoices collection emailed by the E-Invoice Platform.
+invoices use to handle the invoices collection emailed by the E-Invoice Platform (Taiwan).
 
 ## Features
 
