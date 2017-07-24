@@ -22,3 +22,6 @@ func isNotExist(path string) bool {
 	}
 	return false
 }
+func isExist(path string) bool {
+	return !isNotExist(path)
+}

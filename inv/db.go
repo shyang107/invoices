@@ -17,10 +17,12 @@ var DB *gorm.DB
 // initialdb initialize database
 func initialdb() {
 	io.Verbose = true
-	pstat("  > Removing file %q ...\n", cfg.DBPath)
-	err := os.Remove(cfg.DBPath)
-	if err != nil {
-		panic(err)
+	if isExist(cfg.DBPath) {
+		pstat("  > Removing file %q ...\n", cfg.DBPath)
+		err := os.Remove(cfg.DBPath)
+		if err != nil {
+			panic(err)
+		}
 	}
 	db, err := gorm.Open("sqlite3", os.ExpandEnv(cfg.DBPath))
 	if err != nil {
@@ -72,8 +74,8 @@ func GetInvoiceList() ([]Invoice, error) {
 	return invs, nil
 }
 
-// InsertFrom creats records from []*Invoice into database
-func InsertFrom(pvs []*Invoice) {
+// DBInsertFrom creats records from []*Invoice into database
+func DBInsertFrom(pvs []*Invoice) {
 	for _, v := range pvs {
 		// io.Pforan("# %v", *v)
 		// DB.FirstOrCreate(v)
@@ -81,8 +83,8 @@ func InsertFrom(pvs []*Invoice) {
 	}
 }
 
-// DumpData dumps all data from db
-func DumpData(dumpFilename string) error {
+// DBDumpData dumps all data from db
+func DBDumpData(dumpFilename string) error {
 	pstat("  > Dumping data from database %q ...\n", cfg.DBPath)
 	pvs, err := GetInvoiceList()
 	if err != nil {

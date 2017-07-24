@@ -144,6 +144,6 @@ func (XMLMarshaller) UnmarshalInvoices(fn string) ([]*Invoice, error) {
 	plog(GetInvoicesTable(pvs))
 	// pchk("%v\n", vsToTable(pvs))
 	prun("    updating database ...\n")
-	InsertFrom(pvs)
+	DBInsertFrom(pvs)
 	return pvs, nil
 }

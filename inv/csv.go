@@ -86,11 +86,11 @@ func (CsvMarshaller) UnmarshalInvoices(fn string) ([]*Invoice, error) {
 		head := recs[0]
 		switch head {
 		case "M": // invoice
-			pinv := parseCSVInvoice(recs)
+			pinv := unmarshalCSVInvoice(recs)
 			// io.Pf("%s%v\n", io.StrSpaces(4), *pinv)
 			pinvs = append(pinvs, pinv)
 		case "D": // deltail of invoice
-			pdet := parseCSVDetail(recs)
+			pdet := unmarshalCSVDetail(recs)
 			// io.Pf("%s%v\n", io.StrSpaces(4), det)
 			pdets = append(pdets, pdet)
 		}
@@ -104,7 +104,7 @@ func (CsvMarshaller) UnmarshalInvoices(fn string) ([]*Invoice, error) {
 	plog(GetInvoicesTable(pinvs))
 	// printInvList(pinvs)
 	prun("    updating database ...\n")
-	InsertFrom(pinvs)
+	DBInsertFrom(pinvs)
 	return pinvs, nil
 }
 
@@ -121,7 +121,7 @@ func combineInvoice(pvs []*Invoice, pds []*Detail) {
 	}
 }
 
-func parseCSVDetail(recs []string) *Detail {
+func unmarshalCSVDetail(recs []string) *Detail {
 	// pchk("%sDetail : %#v\n", io.StrSpaces(4), recs)
 	det := Detail{
 		Head:     recs[0],
@@ -132,7 +132,7 @@ func parseCSVDetail(recs []string) *Detail {
 	return &det
 }
 
-func parseCSVInvoice(recs []string) *Invoice {
+func unmarshalCSVInvoice(recs []string) *Invoice {
 	// pchk("%sInvoice : %#v\n", io.StrSpaces(4), recs)
 	date, err := time.Parse(dateFormat, recs[3])
 	location, _ := time.LoadLocation("Local")
@@ -144,12 +144,11 @@ func parseCSVInvoice(recs []string) *Invoice {
 		State:    recs[1],
 		UINumber: recs[2],
 		Date:     date.In(location),
-		// PDate:   recs[3],
-		SUN:     recs[4],
-		SName:   recs[5],
-		CName:   recs[6],
-		CNumber: recs[7],
-		Total:   io.Atof(recs[8]),
+		SUN:      recs[4],
+		SName:    recs[5],
+		CName:    recs[6],
+		CNumber:  recs[7],
+		Total:    io.Atof(recs[8]),
 	}
 	return &inv
 }

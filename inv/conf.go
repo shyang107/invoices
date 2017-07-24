@@ -77,7 +77,7 @@ func NewConfig() *Config {
 	}
 	io.Verbose = cfg.Verbose
 	chk.Verbose = cfg.Verbose
-	Opt = DefaultOption
+	Opt = &DefaultOption
 	return cfg
 }
 
@@ -172,7 +172,7 @@ func dump(c *cli.Context) error {
 		cfg.DumpPath = dfn
 	}
 	connectdb()
-	DumpData(cfg.DumpPath)
+	DBDumpData(cfg.DumpPath)
 	os.Exit(0)
 	return nil
 }
@@ -208,20 +208,20 @@ func confexec(ol OptionList) error {
 	// var fbs = make([]*FileBunker, 0)
 	// for _, o := range ol.List {
 	for i := 0; i < len(Opts); i++ {
-		o := Opts[i]
-		plog("%s", o)
+		Opt = Opts[i]
+		plog("%s", Opt)
 		//
-		if err := o.UpdateFileBunker(); err != nil {
+		if err := Opt.UpdateFileBunker(); err != nil {
 			return err
 		}
 		//
-		pvs, err := o.ReadInvoices()
+		pvs, err := Opt.ReadInvoices()
 		if err != nil {
 			perr("%v\n", err)
 			return err
 		}
-		if o.IsOutput {
-			err = o.WriteInvoices(pvs)
+		if Opt.IsOutput {
+			err = Opt.WriteInvoices(pvs)
 		}
 	}
 	// pchk(GetFileBunkerTable(fbs, 0))

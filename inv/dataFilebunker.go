@@ -1,6 +1,7 @@
 package inv
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -19,6 +20,7 @@ type FileBunker struct {
 	Size     int        `cht:"檔案大小" json:"size"`
 	ModAt    time.Time  `cht:"修改時間" json:"modtime_at" sql:"index"` // modification time
 	Encoding string     `cht:"編碼" json:"encoding"`
+	Checksum string     `cht:"檢查碼" json:"checksum"` //sha256
 	Contents []byte     `cht:"內容" json:"-"`
 }
 
@@ -36,7 +38,7 @@ func (f FileBunker) String() string {
 		case "ModAt":
 			str = Sf("%v", val.Field(i).Interface().(time.Time).In(location))
 		case "Size":
-			str = Sf("%vB", val.Field(i).Interface().(int))
+			str = BytesToString(val.Field(i).Interface().(int))
 		case "Contents":
 			str = "[略...]"
 		default:
@@ -69,7 +71,7 @@ func (f *FileBunker) GetArgsTable(title string, lensp int) string {
 	// heads = append(heads, tmp...)
 	strSize := BytesToString(f.Size)
 	table := ArgsTableN(title, lensp, heads,
-		f.Name, strSize, f.ModAt.In(location), f.Encoding, "[略...]")
+		f.Name, strSize, f.ModAt.In(location), f.Encoding, f.Checksum, "[略...]")
 	return table
 }
 
@@ -78,7 +80,7 @@ func GetFileBunkerTable(pfbs []*FileBunker, lensp int) string {
 	Sf := fmt.Sprintf
 	location, _ := time.LoadLocation("Local")
 	title := "原始發票檔案清單"
-	heads := []string{"項次"} //, "表頭", "發票號碼", "小計", "品項名稱"}
+	heads := []string{"項次"}
 	_, _, _, tmp := GetFieldsInfo(FileBunker{}, "cht", "Model")
 	heads = append(heads, tmp...)
 	if lensp < 0 {
@@ -88,7 +90,7 @@ func GetFileBunkerTable(pfbs []*FileBunker, lensp int) string {
 	for i, f := range pfbs {
 		strSize := BytesToString(f.Size)
 		data = append(data, i+1,
-			f.Name, strSize, Sf("%v", f.ModAt.In(location)), f.Encoding, "[略...]")
+			f.Name, strSize, Sf("%v", f.ModAt.In(location)), f.Encoding, f.Checksum, "[略...]")
 	}
 	table := ArgsTableN(title, lensp, heads, data...)
 	return table
@@ -105,12 +107,14 @@ func (o *Option) UpdateFileBunker() error {
 		if err != nil {
 			return err
 		}
+		sum := fmt.Sprintf("%x", sha256.Sum256(b))
 		fn := filepath.Base(o.InpFn)
 		fb := FileBunker{
 			Name:     fn,
 			Size:     int(fi.Size()),
 			ModAt:    fi.ModTime(),
 			Encoding: o.IfnEncoding,
+			Checksum: sum,
 			Contents: b,
 		}
 		DB.Where(&fb).FirstOrCreate(&fb)

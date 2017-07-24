@@ -11,7 +11,7 @@ import (
 
 var (
 	// Opt is option for this application
-	Opt Option
+	Opt *Option
 	// Opts are options for this application
 	Opts []*Option
 )
