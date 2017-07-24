@@ -12,6 +12,8 @@ import (
 var (
 	// Opt is option for this application
 	Opt Option
+	// Opts are options for this application
+	Opts []*Option
 )
 
 // Option setup the application
@@ -96,12 +98,10 @@ var DefaultOption = Option{
 // }
 
 // OptionList :
-type OptionList struct {
-	List *[]Option
-}
+type OptionList struct{}
 
 // ReadOptions reads the configuration
-func (ol *OptionList) ReadOptions(cpath string) error {
+func (OptionList) ReadOptions(cpath string) ([]*Option, error) {
 	// startfunc(fostart)
 	pstat("  > Reading options from .jsn or .json file %q ...\n", cpath)
 	if !isOpened(cpath) {
@@ -110,21 +110,19 @@ func (ol *OptionList) ReadOptions(cpath string) error {
 	//
 	b, err := io.ReadFile(cpath)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	var opts []Option
+	var opts []*Option
 	err = jsoniter.Unmarshal(b, &opts)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	ol.List = &opts
 	// stopfunc(fostop)
-	return nil
+	return opts, nil
 }
 
 // NewOption return an new Option
 func NewOption() OptionList {
-	var ol OptionList
-	ol.List = &[]Option{DefaultOption}
-	return ol
+	Opts = []*Option{&DefaultOption}
+	return OptionList{}
 }

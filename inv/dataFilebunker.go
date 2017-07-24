@@ -1,79 +1,121 @@
 package inv
 
 import (
-	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"time"
 
+	"github.com/cpmech/gosl/io"
 	"github.com/jinzhu/gorm"
 )
 
 // FileBunker use to backup original file of invoices
 type FileBunker struct {
-	Model    gorm.Model
-	Name     string    `cht:"檔案名稱"`
-	ModTime  time.Time `cht:"修改時間" sql:"index"` // modification time
-	Encoding string    `cht:"編碼"`
-	Contents []byte    `cht:"內容"`
+	Model    gorm.Model `json:"-" gorm:"embedded"`
+	Name     string     `cht:"檔案名稱" json:"name"`
+	Size     int        `cht:"檔案大小" json:"size"`
+	ModAt    time.Time  `cht:"修改時間" json:"modtime_at" sql:"index"` // modification time
+	Encoding string     `cht:"編碼" json:"encoding"`
+	Contents []byte     `cht:"內容" json:"-"`
 }
 
 func (f FileBunker) String() string {
-	Sf, Ff := fmt.Sprintf, fmt.Fprintf
-	var b bytes.Buffer
+	Sf := fmt.Sprintf
+	location, _ := time.LoadLocation("Local")
 	val := reflect.ValueOf(f) //.Elem()
 	fld := val.Type()
 	var str string
+	var cols = make([]string, 0)
 	for i := 0; i < val.NumField(); i++ {
 		switch fld.Field(i).Name {
-		case "Model", "Contents":
+		case "Model":
 			continue
+		case "ModAt":
+			str = Sf("%v", val.Field(i).Interface().(time.Time).In(location))
+		case "Size":
+			str = Sf("%vB", val.Field(i).Interface().(int))
+		case "Contents":
+			str = "[略...]"
 		default:
 			// str = val.Field(i).Interface().(string)
 			str = Sf("%v", val.Field(i).Interface().(string))
 		}
-		Ff(&b, " %s : %s |", fld.Field(i).Tag.Get("cht"), str)
+		cols = append(cols, Sf("%s:%s", fld.Field(i).Tag.Get("cht"), str))
 	}
-	Ff(&b, "\n")
-	return b.String()
+	return strings.Join(cols, csvSep)
 }
 
 // TableName : set Detail's table name to be `details`
 func (FileBunker) TableName() string {
 	// custom table name, this is default
-	return "file_bunker"
+	return "filebunker"
 }
 
 // GetArgsTable :
 func (f *FileBunker) GetArgsTable(title string, lensp int) string {
 	// Sf := fmt.Sprintf
+	location, _ := time.LoadLocation("Local")
 	if len(title) == 0 {
 		title = "原始發票檔案清單"
 	}
 	// var heads = []string{"項次"}
-	_, _, _, heads := GetFieldsInfo(Detail{}, "cht", "Model", "Contents")
+	_, _, _, heads := GetFieldsInfo(FileBunker{}, "cht", "Model")
 	if lensp < 0 {
 		lensp = 0
 	}
 	// heads = append(heads, tmp...)
-	table := ArgsTableN(title, lensp, heads, f.Name, f.ModTime, f.Encoding)
+	strSize := BytesToString(f.Size)
+	table := ArgsTableN(title, lensp, heads,
+		f.Name, strSize, f.ModAt.In(location), f.Encoding, "[略...]")
 	return table
 }
 
 // GetFileBunkerTable returns the table string of the list of []*Detail
 func GetFileBunkerTable(pfbs []*FileBunker, lensp int) string {
 	Sf := fmt.Sprintf
+	location, _ := time.LoadLocation("Local")
 	title := "原始發票檔案清單"
 	heads := []string{"項次"} //, "表頭", "發票號碼", "小計", "品項名稱"}
-	_, _, _, tmp := GetFieldsInfo(Detail{}, "cht", "Model", "Contents")
+	_, _, _, tmp := GetFieldsInfo(FileBunker{}, "cht", "Model")
 	heads = append(heads, tmp...)
 	if lensp < 0 {
 		lensp = 0
 	}
 	var data []interface{}
 	for i, f := range pfbs {
-		data = append(data, i+1, f.Name, Sf("%v", f.ModTime), f.Encoding)
+		strSize := BytesToString(f.Size)
+		data = append(data, i+1,
+			f.Name, strSize, Sf("%v", f.ModAt.In(location)), f.Encoding, "[略...]")
 	}
 	table := ArgsTableN(title, lensp, heads, data...)
 	return table
+}
+
+// UpdateFileBunker updates DB
+func (o *Option) UpdateFileBunker() error {
+	fi, err := os.Stat(o.InpFn)
+	if err != nil {
+		return err
+	}
+	if strings.ToLower(o.IfnSuffix) == ".csv" && strings.ToLower(o.IfnEncoding) == "big5" {
+		b, err := io.ReadFile(o.InpFn)
+		if err != nil {
+			return err
+		}
+		fn := filepath.Base(o.InpFn)
+		fb := FileBunker{
+			Name:     fn,
+			Size:     int(fi.Size()),
+			ModAt:    fi.ModTime(),
+			Encoding: o.IfnEncoding,
+			Contents: b,
+		}
+		DB.Where(&fb).FirstOrCreate(&fb)
+		// fbs = append(fbs, &fb)
+	}
+	// plog((&fb).GetArgsTable("", 0))
+	return nil
 }

@@ -16,7 +16,12 @@ var DB *gorm.DB
 
 // initialdb initialize database
 func initialdb() {
-	os.Remove(cfg.DBPath)
+	io.Verbose = true
+	pstat("  > Removing file %q ...\n", cfg.DBPath)
+	err := os.Remove(cfg.DBPath)
+	if err != nil {
+		panic(err)
+	}
 	db, err := gorm.Open("sqlite3", os.ExpandEnv(cfg.DBPath))
 	if err != nil {
 		panic("failed to connect database")

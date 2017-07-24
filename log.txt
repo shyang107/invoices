@@ -27,6 +27,7 @@
  Punch:                                       ---------------   ------------------------------
  punch file name (not use for now)            PunchFn           ./out/punch.out               
 ===============================================================================================
+檔案名稱:09102989061-1.csv|修改時間:2017-07-17 00:39:22 +0800 CST|編碼:Big5|內容:[略...]
 [1;36m* Function "_/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv.(*Option).ReadInvoices" start.
 [0m[0;33m"CsvMarshaller"
 [0m[0;33m  > Reading data from .csv file "./inp/09102989061-1.csv" ...
@@ -106,6 +107,7 @@
  Punch:                                       ---------------   ------------------------------
  punch file name (not use for now)            PunchFn           ./out/punch.out               
 ===============================================================================================
+檔案名稱:09102989061-2.csv|修改時間:2017-07-15 18:05:10 +0800 CST|編碼:Big5|內容:[略...]
 [1;36m* Function "_/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv.(*Option).ReadInvoices" start.
 [0m[0;33m"CsvMarshaller"
 [0m[0;33m  > Reading data from .csv file "./inp/09102989061-2.csv" ...
@@ -236,6 +238,7 @@
  Punch:                                       ---------------   ------------------------------
  punch file name (not use for now)            PunchFn           ./out/punch.out               
 ===============================================================================================
+檔案名稱:09102989061-3.csv|修改時間:2017-07-22 12:19:45 +0800 CST|編碼:Big5|內容:[略...]
 [1;36m* Function "_/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv.(*Option).ReadInvoices" start.
 [0m[0;33m"CsvMarshaller"
 [0m[0;33m  > Reading data from .csv file "./inp/09102989061-3.csv" ...
@@ -381,4 +384,4 @@
 [0m[38;5;94m------------------------------------------------------------
 [0m[1;34m# Configuration has been concluded. -- "_/Users/shyang/Dropbox/Golang/shyang107/src/invoices/inv.(*Config).ReadCommandLine"
 [0m[38;5;94m------------------------------------------------------------
-[0mrun-time elapsed : 16.871979ms
+[0mrun-time elapsed : 43.280762ms

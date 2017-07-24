@@ -157,7 +157,7 @@ func (c *Config) ReadCommandLine() {
 }
 func initial(c *cli.Context) error {
 	io.Verbose = true
-	pstat("initializing ... [TODO]\n")
+	initialdb()
 	os.Exit(0)
 	return nil
 }
@@ -198,16 +198,23 @@ func runCommands(c *cli.Context) error {
 
 func confexec(ol OptionList) error {
 	plog("%v", cfg)
-	if err := ol.ReadOptions(cfg.CasePath); err != nil {
+	Opts, err := ol.ReadOptions(cfg.CasePath)
+	if err != nil {
 		return err
 	}
 	//
 	connectdb()
 	//
+	// var fbs = make([]*FileBunker, 0)
 	// for _, o := range ol.List {
-	for i := 0; i < len(*ol.List); i++ {
-		o := (*ol.List)[i]
+	for i := 0; i < len(Opts); i++ {
+		o := Opts[i]
 		plog("%s", o)
+		//
+		if err := o.UpdateFileBunker(); err != nil {
+			return err
+		}
+		//
 		pvs, err := o.ReadInvoices()
 		if err != nil {
 			perr("%v\n", err)
@@ -217,5 +224,6 @@ func confexec(ol OptionList) error {
 			err = o.WriteInvoices(pvs)
 		}
 	}
+	// pchk(GetFileBunkerTable(fbs, 0))
 	return nil
 }

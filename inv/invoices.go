@@ -1,6 +1,8 @@
 package inv
 
 import (
+	"path/filepath"
+
 	"github.com/cpmech/gosl/chk"
 )
 
@@ -19,6 +21,11 @@ func (o *Option) ReadInvoices() ([]*Invoice, error) {
 	var unmarshaller InvoiceUnmarshaller
 	startfunc(ffstart) //, "ReadInvoices")
 	// pstat("file-type : %q\n", Opts.IfnSuffix)
+	//
+	var fb = FileBunker{Name: filepath.Base(o.InpFn)}
+	DB.Where(&fb).First(&fb)
+	plog((&fb).GetArgsTable("", 0))
+	//
 	switch o.IfnSuffix {
 	case ".csv":
 		pstat("%q\n", "CsvMarshaller")
