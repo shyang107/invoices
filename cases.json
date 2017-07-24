@@ -1,0 +1,28 @@
+[{
+    "input_filename": "./inp/09102989061-1.csv",
+    "input_filename_extention": ".csv",
+    "is_native": true,
+    "encoding_name_of_text": "Big5",
+    "output_filename": "./out/09102989061-1.json",
+    "output_filename_extention": ".json",
+    "is_output": false,
+    "punch_filename": "./out/punch.out"
+}, {
+    "input_filename": "./inp/09102989061-2.csv",
+    "input_filename_extention": ".csv",
+    "is_native": true,
+    "encoding_name_of_text": "Big5",
+    "output_filename": "./out/09102989061-2.json",
+    "output_filename_extention": ".json",
+    "is_output": false,
+    "punch_filename": "./out/punch.out"
+}, {
+    "input_filename": "./inp/09102989061-3.csv",
+    "input_filename_extention": ".csv",
+    "is_native": true,
+    "encoding_name_of_text": "Big5",
+    "output_filename": "./out/09102989061-3.json",
+    "output_filename_extention": ".json",
+    "is_output": false,
+    "punch_filename": "./out/punch.out"
+}]

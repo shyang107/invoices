@@ -47,7 +47,14 @@ func stopfunc(fid int) {
 	// io.PfBlue(format[fid], callerName(2))
 	// io.Pfdyel2("%s", io.StrThinLine(60))
 	pfstop(format[fid], callerName(2))
-	pfsep("%s", io.StrThinLine(60))
+	pfsep("%s", StrThinLine(60))
+}
+
+func printSepline(n int) {
+	if n < 0 {
+		n = 60
+	}
+	pfsep("%s", StrThinLine(n))
 }
 
 // getErrMessage get error message if error

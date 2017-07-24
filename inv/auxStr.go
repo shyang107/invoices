@@ -3,10 +3,29 @@ package inv
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"strings"
 	"unicode"
 	"unsafe"
 )
+
+// BytesToString convert bytes to a human-readable size
+func BytesToString(byteCount int) string {
+	suf := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"} //Longs run out around EB
+	if byteCount == 0 {
+		return "0" + suf[0]
+	}
+	bytes := math.Abs(float64(byteCount))
+	place := int32(math.Floor(math.Log2(bytes) / 10))
+	num := bytes / math.Pow(1024.0, float64(place))
+	var strnum string
+	if place == 0 {
+		strnum = fmt.Sprintf("%.0f", num) + suf[place]
+	} else {
+		strnum = fmt.Sprintf("%.1f", num) + suf[place]
+	}
+	return strnum
+}
 
 // BtoStr convert []byte to string
 func BtoStr(bs []byte) string {

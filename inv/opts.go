@@ -1,18 +1,19 @@
 package inv
 
 import (
-	"os"
 	"strings"
 
 	"github.com/cpmech/gosl/chk"
 	"github.com/cpmech/gosl/io"
+	jsoniter "github.com/json-iterator/go"
 	// "github.com/shyang/invoices/inv/goini"
-	"github.com/widuu/goini"
 )
 
 var (
 	// Opt is option for this application
 	Opt Option
+	// Opts are options for this application
+	Opts []*Option
 )
 
 // Option setup the application
@@ -52,53 +53,76 @@ func (o Option) String() string {
 
 // DefaultOption sets a list of safe recommended option. Feel free to modify these to suit your needs.
 var DefaultOption = Option{
-	InpFn:       "./data/inp/09751085061.csv",
+	InpFn:       "./inp/09102989061.csv",
 	IfnSuffix:   ".csv",
 	IsNative:    true,
 	IfnEncoding: "Big5",
-	OutFn:       "./data/out/09751085061.json",
+	OutFn:       "./out/09102989061.json",
 	OfnSuffix:   ".json",
-	PunchFn:     "./data/out/punch.out",
+	PunchFn:     "./out/punch.out",
 }
 
-// GetOptions gets the configuration from cfgFN
-// // [input]
-// // inputFile   = ./09751085061.csv
-// // is_native   = false
-// // encoding    = big5
-// // [output]
-// // outputFile  = ./09751085061.json
-// // is_output   = true
-// // [punch]
-// // punchFileName = ./punch.out
-func (o *Option) GetOptions() {
-	startfunc(fostart)
-	cfn := Cfg.CaseFn
-	if !isOpened(cfn) {
-		panic(chk.Err("config-file %q can not open", cfn))
-	}
-	c := goini.SetConfig(cfn)
+// // GetOptions gets the configuration from cfgFN
+// // // [input]
+// // // inputFile   = ./09751085061.csv
+// // // is_native   = false
+// // // encoding    = big5
+// // // [output]
+// // // outputFile  = ./09751085061.json
+// // // is_output   = true
+// // // [punch]
+// // // punchFileName = ./punch.out
+// func (o *Option) GetOptions() {
+// 	startfunc(fostart)
+// 	cfn := cfg.CasePath
+// 	if !isOpened(cfn) {
+// 		panic(chk.Err("config-file %q can not open", cfn))
+// 	}
+// 	c := goini.SetConfig(cfn)
 
-	// [input]
-	o.InpFn = os.ExpandEnv(c.GetValue("input", "input_file"))
-	o.IfnSuffix = io.FnExt(o.InpFn)
-	o.IsNative = io.Atob(c.GetValue("input", "is_native"))
-	o.IfnEncoding = c.GetValue("input", "encoding")
-	// [output]
-	o.OutFn = os.ExpandEnv(c.GetValue("output", "output_file"))
-	o.OfnSuffix = io.FnExt(o.OutFn)
-	o.IsOutput = io.Atob(c.GetValue("output", "is_output"))
-	// [punch]
-	o.PunchFn = c.GetValue("punch", "punchFile")
+// 	// [input]
+// 	o.InpFn = os.ExpandEnv(c.GetValue("input", "input_file"))
+// 	o.IfnSuffix = io.FnExt(o.InpFn)
+// 	o.IsNative = io.Atob(c.GetValue("input", "is_native"))
+// 	o.IfnEncoding = c.GetValue("input", "encoding")
+// 	// [output]
+// 	o.OutFn = os.ExpandEnv(c.GetValue("output", "output_file"))
+// 	o.OfnSuffix = io.FnExt(o.OutFn)
+// 	o.IsOutput = io.Atob(c.GetValue("output", "is_output"))
+// 	// [punch]
+// 	o.PunchFn = os.ExpandEnv(c.GetValue("punch", "punchFile"))
+// 	//
+// 	plog("%s", *o)
+// 	stopfunc(fostop) //, "GetFromConfig")
+// 	// os.Exit(1)
+// }
+
+// OptionList :
+type OptionList struct{}
+
+// ReadOptions reads the configuration
+func (OptionList) ReadOptions(cpath string) ([]*Option, error) {
+	// startfunc(fostart)
+	pstat("  > Reading options from .jsn or .json file %q ...\n", cpath)
+	if !isOpened(cpath) {
+		panic(chk.Err("config-file %q can not open", cpath))
+	}
 	//
-	plog("%s", *o)
-	stopfunc(fostop) //, "GetFromConfig")
-	// os.Exit(1)
+	b, err := io.ReadFile(cpath)
+	if err != nil {
+		return nil, err
+	}
+	var opts []*Option
+	err = jsoniter.Unmarshal(b, &opts)
+	if err != nil {
+		return nil, err
+	}
+	// stopfunc(fostop)
+	return opts, nil
 }
 
 // NewOption return an new Option
-func NewOption() *Option {
-	var o Option
-	o = DefaultOption
-	return &o
+func NewOption() OptionList {
+	Opts = []*Option{&DefaultOption}
+	return OptionList{}
 }
