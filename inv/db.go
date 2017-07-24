@@ -1,6 +1,7 @@
 package inv
 
 import (
+	"log"
 	"os"
 
 	"github.com/cpmech/gosl/io"
@@ -13,10 +14,10 @@ import (
 // DB is database
 var DB *gorm.DB
 
-// InitDB initialize database
-func InitDB() {
-	os.Remove(Cfg.DBPath)
-	db, err := gorm.Open("sqlite3", os.ExpandEnv(Cfg.DBPath))
+// initialdb initialize database
+func initialdb() {
+	os.Remove(cfg.DBPath)
+	db, err := gorm.Open("sqlite3", os.ExpandEnv(cfg.DBPath))
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -27,6 +28,25 @@ func InitDB() {
 	db.Model(&Invoice{}).Related(&Detail{}, "uin")
 	// db.Model(&Invoice{}).AddUniqueIndex("idx_invoices_number", "uin")
 	// db.Model(&Invoice{}).AddForeignKey("uin", "details(id)", "RESTRICT", "RESTRICT")
+}
+
+func connectdb() {
+	//初始化并保持连接
+	var err error
+	DB, err = gorm.Open("sqlite3", cfg.DBPath)
+	//    DB.LogMode(true)//打印sql语句
+	if err != nil {
+		log.Fatalf("database connect is err: %s", err.Error())
+	} else {
+		// log.Print("connect database is success")
+		io.Pfyel("* connect database is success\n")
+	}
+	err = DB.DB().Ping()
+	if err != nil {
+		DB.DB().Close()
+		log.Fatalf("Error on opening database connection: %s", err.Error())
+	}
+	DB.Model(&Invoice{}).Related(&Detail{}, "uin")
 }
 
 // GetInvoiceList get the list from database
@@ -57,8 +77,8 @@ func InsertFrom(pvs []*Invoice) {
 }
 
 // DumpData dumps all data from db
-func DumpData() error {
-	pstat("  > Dumping data from database %q ...\n", Cfg.DBPath)
+func DumpData(dumpFilename string) error {
+	pstat("  > Dumping data from database %q ...\n", cfg.DBPath)
 	pvs, err := GetInvoiceList()
 	if err != nil {
 		return err
@@ -66,7 +86,7 @@ func DumpData() error {
 	// for i, p := range pvs {
 	// 	io.Pfgreen2("Rec. %d : %v\n", i+1, p)
 	// }
-	fn := io.PathKey(Opt.PunchFn) + ".json"
+	fn := io.PathKey(dumpFilename) + ".json"
 	pstat("  >> Marshall data in JSON-type, and then write to %q ...\n", fn)
 	b, err := jsoniter.Marshal(&pvs)
 	if err != nil {

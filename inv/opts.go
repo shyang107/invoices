@@ -52,13 +52,13 @@ func (o Option) String() string {
 
 // DefaultOption sets a list of safe recommended option. Feel free to modify these to suit your needs.
 var DefaultOption = Option{
-	InpFn:       "./data/inp/09751085061.csv",
+	InpFn:       "./data/inp/09102989061.csv",
 	IfnSuffix:   ".csv",
 	IsNative:    true,
 	IfnEncoding: "Big5",
-	OutFn:       "./data/out/09751085061.json",
+	OutFn:       "./out/09102989061.json",
 	OfnSuffix:   ".json",
-	PunchFn:     "./data/out/punch.out",
+	PunchFn:     "./out/punch.out",
 }
 
 // GetOptions gets the configuration from cfgFN
@@ -73,7 +73,7 @@ var DefaultOption = Option{
 // // punchFileName = ./punch.out
 func (o *Option) GetOptions() {
 	startfunc(fostart)
-	cfn := Cfg.CaseFn
+	cfn := cfg.CasePath
 	if !isOpened(cfn) {
 		panic(chk.Err("config-file %q can not open", cfn))
 	}

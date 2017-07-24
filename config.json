@@ -1,0 +1,8 @@
+{
+    "IsInitializeDB": false,
+    "DBPath": "./data/data.db",
+    "Verbose": false,
+    "IsDump": false,
+    "DumpPath": "./data/all_invoices.json",
+    "CasePath": "./cases.json"
+}
