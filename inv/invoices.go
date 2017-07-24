@@ -1,8 +1,6 @@
 package inv
 
 import (
-	"path/filepath"
-
 	"github.com/cpmech/gosl/chk"
 )
 
@@ -17,16 +15,11 @@ type InvoiceUnmarshaller interface {
 }
 
 // ReadInvoices reads invoice-record from fn
-func (o *Option) ReadInvoices() ([]*Invoice, error) {
+func ReadInvoices() ([]*Invoice, error) {
 	var unmarshaller InvoiceUnmarshaller
 	startfunc(ffstart) //, "ReadInvoices")
 	// pstat("file-type : %q\n", Opts.IfnSuffix)
-	//
-	var fb = FileBunker{Name: filepath.Base(o.InpFn)}
-	DB.Where(&fb).First(&fb)
-	plog((&fb).GetArgsTable("", 0))
-	//
-	switch o.IfnSuffix {
+	switch Opt.IfnSuffix {
 	case ".csv":
 		pstat("%q\n", "CsvMarshaller")
 		unmarshaller = CsvMarshaller{}
@@ -41,18 +34,18 @@ func (o *Option) ReadInvoices() ([]*Invoice, error) {
 		unmarshaller = XlsMarshaller{}
 	}
 	if unmarshaller != nil {
-		invs, err := unmarshaller.UnmarshalInvoices(o.InpFn)
+		invs, err := unmarshaller.UnmarshalInvoices(Opt.InpFn)
 		stopfunc(ffstop) //, "ReadInvoices")
 		return invs, err
 	}
-	return nil, chk.Err("not supprted file-type : %s (%s)", o.IfnSuffix, o.InpFn)
+	return nil, chk.Err("not supprted file-type : %s (%s)", Opt.IfnSuffix, Opt.InpFn)
 }
 
 // WriteInvoices reads invoice-record from fn
-func (o *Option) WriteInvoices(invs []*Invoice) error {
+func WriteInvoices(invs []*Invoice) error {
 	var marshaller InvoiceMarshaller
 	startfunc(ffstart) //, "ReadInvoices")
-	switch o.OfnSuffix {
+	switch Opt.OfnSuffix {
 	case ".csv":
 		pstat("%q\n", "CsvMarshaller")
 		marshaller = CsvMarshaller{}
@@ -67,9 +60,9 @@ func (o *Option) WriteInvoices(invs []*Invoice) error {
 		marshaller = XlsMarshaller{}
 	}
 	if marshaller != nil {
-		err := marshaller.MarshalInvoices(o.OutFn, invs)
+		err := marshaller.MarshalInvoices(Opt.OutFn, invs)
 		stopfunc(ffstop) //, "ReadInvoices")
 		return err
 	}
-	return chk.Err("not supprted file-type : %s (%s)", o.IfnSuffix, o.InpFn)
+	return chk.Err("not supprted file-type : %s (%s)", Opt.IfnSuffix, Opt.InpFn)
 }
