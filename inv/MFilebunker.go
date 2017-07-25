@@ -38,7 +38,7 @@ func (f FileBunker) String() string {
 		case "ModAt":
 			str = Sf("%v", val.Field(i).Interface().(time.Time).In(location))
 		case "Size":
-			str = BytesToString(val.Field(i).Interface().(int))
+			str = BytesSizeToString(val.Field(i).Interface().(int))
 		case "Contents":
 			str = "[略...]"
 		default:
@@ -69,7 +69,7 @@ func (f *FileBunker) GetArgsTable(title string, lensp int) string {
 		lensp = 0
 	}
 	// heads = append(heads, tmp...)
-	strSize := BytesToString(f.Size)
+	strSize := BytesSizeToString(f.Size)
 	table := ArgsTableN(title, lensp, heads,
 		f.Name, strSize, f.ModAt.In(location), f.Encoding, f.Checksum, "[略...]")
 	return table
@@ -88,7 +88,7 @@ func GetFileBunkerTable(pfbs []*FileBunker, lensp int) string {
 	}
 	var data []interface{}
 	for i, f := range pfbs {
-		strSize := BytesToString(f.Size)
+		strSize := BytesSizeToString(f.Size)
 		data = append(data, i+1,
 			f.Name, strSize, Sf("%v", f.ModAt.In(location)), f.Encoding, f.Checksum, "[略...]")
 	}

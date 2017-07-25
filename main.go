@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 )
 
 // Version :
-var Version = "v0.0.3"
+var Version = "v0.0.4"
 
 func init() {
 	log.SetPrefix("LOG: ")
@@ -25,7 +26,7 @@ func init() {
 func main() {
 	start := time.Now()
 	c := inv.NewConfig()
-	c.ReadCommandLine()
+	c.RunCommands()
 	//
 	// inv.ConfigCmds(Version)
 	// //
@@ -50,31 +51,5 @@ func main() {
 	// }
 	// }
 	// pfields()
-	duration := time.Since(start) //.Seconds()
-	gio.Pf("run-time elapsed : %v\n", duration)
+	fmt.Printf("run-time elapsed : %v\n", time.Since(start))
 }
-
-// func initDb() {
-// 	//初始化并保持连接
-// 	var err error
-// 	inv.DB, err = gorm.Open("sqlite3", inv.CFG.DBPath)
-// 	//    DB.LogMode(true)//打印sql语句
-// 	if err != nil {
-// 		log.Fatalf("database connect is err: %s", err.Error())
-// 	} else {
-// 		// log.Print("connect database is success")
-// 		io.Pfyel("* connect database is success\n")
-// 	}
-// 	err = inv.DB.DB().Ping()
-// 	if err != nil {
-// 		inv.DB.DB().Close()
-// 		log.Fatalf("Error on opening database connection: %s", err.Error())
-// 	}
-// 	inv.DB.Model(&inv.Invoice{}).Related(&inv.Detail{}, "uin")
-// }
-
-// func checkErr(err error) {
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }

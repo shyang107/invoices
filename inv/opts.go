@@ -104,8 +104,11 @@ type OptionList struct{}
 func (OptionList) ReadOptions(cpath string) ([]*Option, error) {
 	// startfunc(fostart)
 	pstat("  > Reading options from .jsn or .json file %q ...\n", cpath)
-	if !isOpened(cpath) {
-		panic(chk.Err("config-file %q can not open", cpath))
+	// if !isOpened(cpath) {
+	// 	panic(chk.Err("config-file %q can not open", cpath))
+	// }
+	if isNotExist(cpath) {
+		panic(chk.Err("config-file %q does not exist!", cpath))
 	}
 	//
 	b, err := io.ReadFile(cpath)

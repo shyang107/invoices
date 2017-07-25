@@ -111,8 +111,8 @@ func (c *Config) ReadDefaultConfig() error {
 	return nil
 }
 
-// ReadCommandLine config the command-line args
-func (c *Config) ReadCommandLine() {
+// RunCommands config the command-line args
+func (c *Config) RunCommands() {
 	pfsep("%s", StrThinLine(60))
 	startfunc(fcstart)
 	//
@@ -124,7 +124,7 @@ func (c *Config) ReadCommandLine() {
 	}
 	app.Description = "use it to proceed the invoices mailed by the E-Invoice platform"
 	app.Usage = "a application to proceed the data of invoice from the E-Invoice platform"
-	app.Action = runCommands
+	app.Action = runcmds
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name:  "verbose,b",
@@ -183,7 +183,7 @@ func dump(c *cli.Context) error {
 	return nil
 }
 
-func runCommands(c *cli.Context) error {
+func runcmds(c *cli.Context) error {
 	if c.IsSet("verbose") {
 		cfg.Verbose = c.GlobalBool("verbose")
 		io.Verbose = cfg.Verbose
@@ -199,10 +199,10 @@ func runCommands(c *cli.Context) error {
 		cfg.CasePath = cpath
 	}
 
-	return confexec(NewOption())
+	return execute(NewOption())
 }
 
-func confexec(ol OptionList) error {
+func execute(ol OptionList) error {
 	plog("%v", cfg)
 	Opts, err := ol.ReadOptions(cfg.CasePath)
 	if err != nil {

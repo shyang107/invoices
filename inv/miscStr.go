@@ -9,8 +9,8 @@ import (
 	"unsafe"
 )
 
-// BytesToString convert bytes to a human-readable size
-func BytesToString(byteCount int) string {
+// BytesSizeToString convert bytes to a human-readable size
+func BytesSizeToString(byteCount int) string {
 	suf := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"} //Longs run out around EB
 	if byteCount == 0 {
 		return "0" + suf[0]
@@ -27,8 +27,8 @@ func BytesToString(byteCount int) string {
 	return strnum
 }
 
-// BtoStr convert []byte to string
-func BtoStr(bs []byte) string {
+// BytesToString convert []byte to string
+func BytesToString(bs []byte) string {
 	return *(*string)(unsafe.Pointer(&bs))
 }
 
@@ -39,9 +39,9 @@ func GetColStr(s string, size int, left bool) string {
 	// size := nc*2 + ne // s 實際佔位數
 	var tab string
 	if left {
-		tab = fmt.Sprintf("%v%s", s, spaces)
+		tab = fmt.Sprintf("%[1]s%[2]s", s, spaces)
 	} else {
-		tab = fmt.Sprintf("%s%v", spaces, s)
+		tab = fmt.Sprintf("%[2]s%[1]s", s, spaces)
 	}
 	return " " + tab
 }
