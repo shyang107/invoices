@@ -36,7 +36,7 @@ func (o *Option) ReadInvoices() ([]*Invoice, error) {
 	case ".xml":
 		pstat("%q\n", "XMLMarshaller")
 		unmarshaller = XMLMarshaller{}
-	case ".xls":
+	case ".xlsx":
 		pstat("%q\n", "XlsMarshaller")
 		unmarshaller = XlsMarshaller{}
 	}
@@ -62,7 +62,7 @@ func (o *Option) WriteInvoices(invs []*Invoice) error {
 	case ".xml":
 		pstat("%q\n", "XMLMarshaller")
 		marshaller = XMLMarshaller{}
-	case ".xls", ".xlsx":
+	case ".xlsx":
 		pstat("%q\n", "XlsMarshaller")
 		marshaller = XlsMarshaller{}
 	}
