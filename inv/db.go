@@ -56,8 +56,8 @@ func connectdb() {
 	DB.Model(&Invoice{}).Related(&Detail{}, "uin")
 }
 
-// GetInvoiceList get the list from database
-func GetInvoiceList() ([]Invoice, error) {
+// DBDumpInvoices get the list from database
+func DBDumpInvoices() ([]Invoice, error) {
 	// err = DB.Find(pinvs).Error
 	// if err == nil {
 	// 	n := DB.Count(&Invoice{}).
@@ -86,7 +86,7 @@ func DBInsertFrom(pvs []*Invoice) {
 // DBDumpData dumps all data from db
 func DBDumpData(dumpFilename string) error {
 	pstat("  > Dumping data from database %q ...\n", cfg.DBPath)
-	pvs, err := GetInvoiceList()
+	pvs, err := DBDumpInvoices()
 	if err != nil {
 		return err
 	}

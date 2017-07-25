@@ -21,16 +21,16 @@ func (CsvMarshaller) MarshalInvoices(fn string, pvs []*Invoice) error {
 	fmt.Fprintln(&b, fileType)
 	fmt.Fprintln(&b, io.Sf("%v", fileVesion))
 	for _, pv := range pvs {
-		fmt.Fprintln(&b, pv.toCSVInvoice())
+		fmt.Fprintln(&b, pv.toCSVString())
 		for _, d := range pv.Details {
-			fmt.Fprintln(&b, d.toCSVDetail())
+			fmt.Fprintln(&b, d.toCSVString())
 		}
 	}
 	io.WriteFile(fn, &b)
 	return nil
 }
 
-func (v *Invoice) toCSVInvoice() string {
+func (v *Invoice) toCSVString() string {
 	csv := []string{
 		v.Head,
 		v.State,
@@ -45,7 +45,7 @@ func (v *Invoice) toCSVInvoice() string {
 	return strings.Join(csv, csvSep)
 }
 
-func (d *Detail) toCSVDetail() string {
+func (d *Detail) toCSVString() string {
 	csv := []string{
 		d.Head,
 		d.UINumber,
