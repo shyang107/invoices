@@ -11,8 +11,14 @@ import (
 )
 
 const (
-	// Version indicate the version of package
-	Version = "0.0.4"
+	appversion    = "0.0.4"
+	fileType      = "INVOICES"   // using in text file
+	magicNumber   = 0x125D       // using in binary file
+	fileVesion    = 100          // using in all filetype
+	dateFormat    = "20060102"   // allways using the date
+	strDateFormat = "2006-01-02" // allways using the date
+	// // Version indicate the version of package
+	// Version = "0.0.4"
 	// ConfigPath is the path of config-file
 	ConfigPath = "./config.json"
 )
@@ -112,7 +118,7 @@ func (c *Config) ReadCommandLine() {
 	//
 	app := cli.NewApp()
 	// app.Name = "invoices" // default: path.Base(os.Args[0])
-	app.Version = Version
+	app.Version = appversion
 	app.Authors = []cli.Author{
 		{Name: "S.H. Yang", Email: "shyang107@gmail.com"},
 	}
